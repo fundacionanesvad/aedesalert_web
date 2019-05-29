@@ -1,0 +1,50 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div class="login" ng-controller="LoginController" style="background-image: url('/images/login.jpg'); background-size: 100%;">
+    <div class="modal" id="loginModal">
+        <form class="form-horizontal" ng-submit="login()">
+            <div class="modal-dialog modal-md modal-dialog-center">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title">SAPEV</h1>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" placeholder="Usuario" ng-model="user.login" required autofocus>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="password" class="form-control" placeholder="Contraseña" ng-model="user.password" required>
+                            </div>
+                        </div>
+                        <p class="text-danger" ng-show="error">Usuario y/o contraseña incorrecto</p>
+                    </div>
+                    <div class="modal-footer">
+                        <fieldset ng-disabled="loading">
+                            <span class="pull-left version-login">Versión {{version}}</span>
+                            <img ng-show="loading" src="../../images/loading32.gif" />
+                            <input type="submit" class="btn btn-primary" value="Iniciar sesión" />
+                        </fieldset>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </form>
+    </div><!-- /.modal -->
+</div>

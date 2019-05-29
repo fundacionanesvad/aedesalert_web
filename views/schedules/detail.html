@@ -1,0 +1,265 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.schedules.list">Listado</a></li>
+                    <li><strong>Detalle</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel with-nav-tabs panel-primary" ng-hide="view.loading">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a ng-click="view.tab=1" data-toggle="tab">Planificación</a></li>
+                <li><a ng-click="view.tab=2" data-toggle="tab">Inspecciones <span class="badge">{{data.inspections.length}}</span></a></li>
+            </ul>
+            <div class="btn-group pull-right" ng-show="view.tab==2" style="margin: -34px 5px;">
+                <a ng-click="showInspection(null)" class="btn btn-warning btn-xs">Añadir</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-show="view.tab==1">
+                <form class="form-horizontal">
+                    <fieldset ng-disabled="view.saving">
+                        <fieldset ng-disabled="!view.allowEdit">
+                            <div class="form-group">
+                                <label for="startDate" class="col-sm-2 control-label" label-required>Fecha Inicio</label>
+                                <div class="col-sm-4">
+                                    <div class="input-group" ng-model="data.schedule.startDate" timestamp-format >
+                                        <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="timestamp" is-open="startSchedulePicker.opened" 
+                                            datepicker-options="startSchedulePicker.options" show-button-bar="false" min-date="picker.minStartDate" max-date="picker.maxStartDate" 
+                                            readonly ng-click="openStartSchedulePicker($event)" />
+                                        <span class="input-group-btn" ng-click="openStartSchedulePicker($event)">
+                                            <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="finishDate" class="col-sm-2 control-label" label-required>Fecha Fin</label>
+                                <div class="col-sm-4">
+                                    <div class="input-group" ng-model="data.schedule.finishDate" timestamp-format>
+                                        <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="timestamp" is-open="finishSchedulePicker.opened" 
+                                               datepicker-options="finishSchedulePicker.options" show-button-bar="false" min-date="picker.minFinishDate" max-date="picker.maxFinishDate" 
+                                               readonly ng-click="openFinishSchedulePicker($event)" />
+                                        <span class="input-group-btn" ng-click="openFinishSchedulePicker($event)">
+                                            <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="area" class="col-sm-2 control-label">Zona</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static"><a ui-sref="app.areas.detail({id: data.area.id})">{{data.area.name}}</a></p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="larvicideId" class="col-sm-2 control-label">Larvicida</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" id="larvicideId" ng-model="data.schedule.larvicideId" ng-options="larvicide.id as larvicide.name for larvicide in data.larvicides | orderBy:'name' | filter: { enabled: true }" ng-if="!data.inspections.length"></select>
+                                    <select ng-disabled="true" class="form-control" id="larvicideId" ng-model="data.schedule.larvicideId" ng-options="larvicide.id as larvicide.name for larvicide in data.larvicides | orderBy:'name'" ng-if="data.inspections.length"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="area" class="col-sm-2 control-label">Tipo Inspección</label>
+                                <div class="col-sm-4">
+                                    <select ng-disabled="data.inspections.length" class="form-control" id="typeId" ng-model="data.schedule.typeId" ng-options="type.id as type.name for type in tables[1]"></select>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="data.schedule.typeId==1002">
+                                <label for="area" class="col-sm-2 control-label">Reconversión</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static"><input type="checkbox" ng-disabled="data.inspections.length != 0 || data.schedules.length == 0" ng-model="data.reconversion" ng-click="checkReconversion()" /></p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="data.reconversion">
+                                <label for="area" class="col-sm-2 control-label">Planificación Reconversión</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" ng-disabled="data.inspections.length" ng-model="data.schedule.reconversionScheduleId" ng-change="loadReconversionInspections()">
+                                        <option ng-repeat="schedule in data.schedules | filter: { typeId: 1002 } | orderBy: '-startDate'" value="{{schedule.id}}" ng-selected="data.schedule.reconversionScheduleId == schedule.id">
+                                            {{schedule.startDate | shortDate}} -> {{schedule.finishDate | shortDate}}: {{schedule.typeId | element:elements}}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <p class="form-control-static"><a ui-sref="app.schedules.detail({id: data.schedule.reconversionScheduleId})" target="_blank">Ver</a></p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="data.reconversionInspections.length">
+                                <label for="area" class="col-sm-2 control-label">&nbsp;</label>
+                                <div class="col-sm-10">
+                                    <span ng-repeat="(key, value) in data.reconversionInspections | groupBy:'areaId'">{{(key | array:data.area.childs) + ($last ? '' : ',')}}</span>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input type="submit" class="btn btn-primary" value="Guardar" ng-click="saveSchedule()" check-access="SCHEDULES_EDIT" />
+                                <a href="#" ng-click="printReport()" class="btn btn-success" ng-hide="data.inspections.length == 0">Imprimir informe</a>
+                                <a ui-sref="app.schedules.list" class="btn btn-default">Volver</a>
+                                <img ng-show="view.saving" src="../../images/loading32.gif" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div ng-show="view.tab==2">
+                <div class="text-center" ng-hide="data.inspections.length">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.inspections.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th><a href="" ng-click="predicate='startDate'; reverse=!reverse">Inicio</a></th>
+                                <th><a href="" ng-click="predicate='finishDate'; reverse=!reverse">Fin</a></th>
+                                <th><a href="" ng-click="predicate='stateId'; reverse=!reverse">Estado</a></th>
+                                <th><a href="" ng-click="predicate='areaId'; reverse=!reverse">Zona</a></th>
+                                <th><a href="" ng-click="predicate='inspectionSize'; reverse=!reverse">Objetivo</a></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="inspection in data.inspections | orderBy: 'startDate' |  orderBy:predicate:reverse"  ng-click="detailInspection(inspection)" >
+                                <td>{{inspection.startDate | shortDate}}</td>
+                                <td>{{inspection.finishDate | shortDate}}</td>
+                                <td>{{inspection.stateId | element:elements}}</td>
+                                <td>{{inspection.areaId | array:data.area.childs}}</td>
+                                <td>{{inspection.inspectionSize}}</td>
+                                <td style="text-align: right">
+                                    <a href title="Modificar" ng-click="showInspection(inspection)" stop-event><span class="glyphicon glyphicon-edit icon-normal" aria-hidden="true"></span></a>
+                                    <delete-button ng-if="inspection.stateId == 3001" target="deleteModal" ng-click="confirmDelete(inspection)" stop-event />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalInspection">
+        <form ng-submit="saveInspection()">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Edición Inspección</h4>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset ng-disabled="view.saving||!view.allowEdit" ng-hide="view.waiting">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" label-required>Fecha Inicio</label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group" ng-model="data.inspection.startDate" timestamp-format>
+                                            <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="timestamp" is-open="startInspectionPicker.opened"
+                                                   datepicker-options="startInspectionPicker.options" show-button-bar="false" min-date="picker.minStartDate" max-date="picker.maxStartDate"
+                                                   readonly ng-click="openStartInspectionPicker($event)" />
+                                            <span class="input-group-btn" ng-click="openStartInspectionPicker($event)">
+                                                <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" label-required>Fecha Fin</label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group" ng-model="data.inspection.finishDate" timestamp-format>
+                                            <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="timestamp" is-open="finishInspectionPicker.opened"
+                                                   datepicker-options="finishInspectionPicker.options" show-button-bar="false" min-date="picker.minFinishDate" max-date="picker.maxFinishDate"
+                                                   readonly ng-click="openFinishInspectionPicker($event)" />
+                                            <span class="input-group-btn" ng-click="openFinishInspectionPicker($event)">
+                                                <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Estado</label>
+                                    <div class="col-sm-9">
+                                        <p class="form-control-static">{{data.inspection.stateId | element:elements}}</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">EESS</label>
+                                    <div class="col-sm-9">  
+                                         
+                                        <select class="form-control" ng-model="data.inspection.areaId" ng-options="area.id as area.name for area in data.areaInspection.childs | orderBy: 'name' " ng-disabled="data.plans.length != 0" ng-hide="data.schedule.reconversionScheduleId"></select>
+                                        
+                                        <select class="form-control" ng-model="data.inspection.areaId" ng-disabled="data.plans.length != 0" ng-init="data.inspection.areaId = options[0]" ng-show="data.schedule.reconversionScheduleId">
+                                            <option ng-repeat="area in data.areaInspection.childs | orderBy: 'name'" value="{{area.id}}" ng-selected="true">
+                                                {{area.name}} --> {{data.reconversionInspections[$index].startDate | shortDate}} // {{data.reconversionInspections[$index].finishDate | shortDate}}
+                                            </option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Larvicida</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control" ng-model="data.inspection.larvicideId" ng-options="larvicide.id as larvicide.name for larvicide in data.larvicides | orderBy:'name' | filter: { enabled: true }" ng-if="!data.plans.length"></select>
+                                        <select ng-disabled="true" class="form-control" ng-model="data.inspection.larvicideId" ng-options="larvicide.id as larvicide.name for larvicide in data.larvicides | orderBy:'name'" ng-if="data.plans.length"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <img ng-show="view.waiting" src="../../images/loading32.gif" />
+                    </div>
+                    <div class="modal-footer">
+                        <fieldset ng-disabled="view.saving" ng-hide="view.waiting">
+                            <img ng-show="view.saving" src="../../images/loading32.gif" />
+                            <input ng-if="data.plan.stateId!=10011&&view.allowEdit" type="submit" class="btn btn-primary" value="Guardar" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        </fieldset>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </form>
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modalDownload" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Informe</h4>
+                </div>
+                <div class="modal-body">
+                    Generando...
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <delete-modal target="deleteModal" action="deleteInspection()" deleting="view.deleting">
+        <p>¿Estás seguro de querer eliminar <strong>la inspección</strong>?</p>
+    </delete-modal>
+    <alert-modal target="modalAlert">
+        <p>{{textAlert}}</p>
+    </alert-modal>
+</div>

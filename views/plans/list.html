@@ -1,0 +1,102 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><strong>Listado de planes</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">
+            Planes
+        </div>
+        <div class="panel-body">
+            <div class="text-center" ng-hide="plans.length">
+                <h3>No hay datos</h3>
+            </div>
+            <div class="table-responsive" ng-show="plans.length">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Tamaño inspección</th>
+                            <th>Zonas</th>
+                            <th colspan="2" ng-if="canEdit">Registro manual</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="plan in plans">
+                            <td>{{plan.date | shortDate}}</td>
+                            <td>{{plan.stateId | element:elements}}</td>
+                            <td>{{plan.planSize}} viviendas</td>
+                            <td>
+                                <span ng-repeat="area in plan.areas track by $index">
+                                    {{(area) + ($last ? '' : ',')}}
+                                </span>
+                            </td>
+                            <td ng-if="canEdit"><a ng-if="plan.stateInspection == 3002 && (plan.stateId == 7002 || plan.stateId == 7001)" ui-sref="app.plans.detail({ id: plan.id })">Detallado</a></td>
+                            <td ng-if="canEdit"><a ng-if="plan.stateInspection == 3002 && (plan.stateId == 7002 || plan.stateId == 7001)" ui-sref="app.plans.summary({ id: plan.id })">Consolidado</a></td>
+                            <td data-title="'&nbsp;'" class="text-right" width="70px">
+                                <a ng-show="plan.stateId == 7003 && plan.id != null && permissionToSend" href="#" title="Descargar Resumen Visitas" ng-click="downloadPlan(plan.id)"><i class="glyphicon glyphicon-download-alt"></i></a>
+                                <a ng-show="plan.stateId == 7003 && plan.id != null && permissionToSend" href="#" title="Email Resumen Visitas" ng-click="sendEmailInspector(plan.id)"><i class="glyphicon glyphicon-envelope"></i></a>
+                                <a href="#" title="Imprimir Mapa" ng-click="printReport(plan.id)"><i class="glyphicon glyphicon-print"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDownload" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Informe</h4>
+            </div>
+            <div class="modal-body">
+                Generando...
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalSend" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Email</h4>
+            </div>
+            <div class="modal-body">
+                Enviando...
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

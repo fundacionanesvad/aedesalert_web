@@ -1,0 +1,187 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.visits.list">Listado</a></li>
+                    <li><strong>Detalle</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel with-nav-tabs panel-primary" ng-hide="view.loading">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a ng-click="view.tab=1" data-toggle="tab">Visita</a></li>
+                <li ng-show="view.extended"><a ng-click="view.tab=2" data-toggle="tab">Inventario <span class="badge">{{sumInventories()}}</span></a></li>
+                <li ng-show="view.extended"><a ng-click="view.tab=3" data-toggle="tab">Muestras <span class="badge">{{data.samples.length}}</span></a></li>
+                <li ng-show="view.extended"><a ng-click="view.tab=4" data-toggle="tab">Habitantes <span class="badge">{{data.persons.length}}</span></a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div ng-show="view.tab==1">
+                <form class="form-horizontal" ng-submit="save()">
+                    <fieldset ng-disabled="view.saving">
+                        <div class="form-group">
+                            <label for="number" class="col-sm-2 control-label">Fecha</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.visit.date | shortDate}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="code" class="col-sm-2 control-label">Vivienda</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><a ui-sref="app.houses.detail({id: data.visit.house.uuid})">{{data.visit.house.code}}</a></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Inspección</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><a ui-sref="app.inspections.detail({id: data.visit.inspectionId})"><span class="glyphicon glyphicon-search"></span> Ver</a></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Resultado</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.visit.resultName}}<span ng-show="data.visit.reconverted"> (Reconversión)</span></p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="view.extended">
+                            <label for="streetNumber" class="col-sm-2 control-label">Larvicida</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.visit.larvicide}} {{data.larvicide.unity}} ({{data.larvicide.name}})</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="view.extended">
+                            <label for="streetName" class="col-sm-2 control-label">Febriles</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.visit.feverish ? data.visit.feverish : 'No'}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="view.extended">
+                            <label for="area" class="col-sm-2 control-label">Comentarios</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.visit.comments ? data.visit.comments : '-'}}</p>
+                            </div>
+                        </div>                       
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <a ui-sref="app.visits.list" class="btn btn-default">Volver</a>
+                                <img ng-show="view.saving" src="../../images/loading32.gif" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div ng-show="view.tab==2">
+                <div class="text-center" ng-hide="data.inventories.length">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.inventories.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tipo Recipiente</th>
+                                <th>Inspeccionado</th>
+                                <th>Foco</th>
+                                <th>Tratado</th>
+                                <th>{{data.larvicide.doseName}} ({{data.larvicide.dose}} {{data.larvicide.unity}})</th>
+                                <th>Destruido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="inventory in data.inventories" ng-if="inventory.inspected>0">
+                                <td>{{inventory.containerName}}</td>
+                                <td>{{inventory.inspected}}</td>
+                                <td>{{inventory.focus}}</td>
+                                <td>{{inventory.treated}}</td>
+                                <td>{{inventory.packet}}</td>
+                                <td>{{inventory.destroyed}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div ng-show="view.tab==3">
+                <div class="text-center" ng-hide="data.samples.length">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.samples.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tipo Recipiente</th>
+                                <th>Código</th>
+                                <th>Estado Vector</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="sample in data.samples">
+                                <td>{{sample.containerName}}</td>
+                                <td>{{sample.code}}</td>
+                                <td>{{sample.phaseName}}</td>
+                                <td>{{sample.result}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div ng-show="view.tab==4">
+                <div class="text-center" ng-hide="data.persons.length">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.persons.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>DNI</th>
+                                <th>Sexo</th>
+                                <th>Edad</th>
+                                <th>Febril</th>
+                                <th>Sintomas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="person in data.persons">
+                                <td>{{person.name}}</td>
+                                <td>{{person.cardId}}</td>
+                                <td>{{person.genre == 'M' ? 'Hombre' : 'Mujer'}}</td>
+                                <td>{{person.birthday | age:person.birthdayExact}} años</td>
+                                <td><check-icon value="person.symptoms.length" /></td>
+                                <td>
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="symptom in person.symptoms">{{symptom}}</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><strong>Importar / Exportar</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+
+
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">
+            Inspecciones con muestras pendientes
+        </div>
+        <div class="panel-body">
+            <div class="text-center" ng-hide="items.length">
+                <h3>No hay datos</h3>
+            </div>
+            <div class="table-responsive" ng-show="items.length">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><a href="" ng-click="predicate='date'; reverse=!reverse">Fecha</a></th>
+                            <th><a href="" ng-click="predicate='areaName'; reverse=!reverse">Zona</a></th>
+                            <th width="250"><a href="" ng-click="predicate='numSamples'; reverse=!reverse">Muestras pendientes</a></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in items | orderBy:predicate:reverse">
+                            <td>{{item.date | shortDate}}</td>
+                            <td>{{item.parentName}} > {{item.areaName}}</td>
+                            <td>{{item.numSamples}}</td>
+                            <td><span class="glyphicon glyphicon-download-alt" ng-click="print(item)" title="Descargar"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-primary" ng-hide="loading"
+         flow-init="{target: url, testChunks:false, headers: { Authorization: token }}"
+         flow-file-added="fileAdded($file, $event, $flow)"
+         flow-files-submitted="$flow.upload()"
+         flow-file-success="fileSuccess($file, $message, $flow)"
+         flow-file-error="fileError($file, $message, $flow)"
+         check-access="SAMPLES_EDIT">
+        <div class="panel-heading">
+            Importar Muestras
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal" enctype="multipart/form-data">
+                <div class="alert alert-info">
+                    Para actualizar el resultado de las muestras en AEDES ALERT:
+                    <ol>
+                        <li>Descargar un fichero de muestras pendientes (ver cuadro inspecciones con muestras pendientes)</li>
+                        <li>Completar el resultado de las mismas</li>
+                        <li>Importar el fichero</li>
+                    </ol>
+                </div>
+                <p>
+                    <a ng-disabled="uploading" href="javascript:void(0)" class="btn btn-sm btn-primary" flow-btn>Seleccionar fichero</a>
+                    <img ng-show="uploading" src="../../images/loading32.gif" />
+                </p>
+                <div ng-show="uploaded" class="alert alert-success">
+                    Fichero subido con éxito.
+                </div>
+                <div ng-show="error" class="alert alert-danger">
+                    Ha occurido un error al subir el fichero.
+                </div>
+                <div ng-show="format" class="alert alert-warning">
+                    El formato del fichero no es correcto.<br />
+                    Debe subir un fichero Excel con extensión xlsx.
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="modal fade" id="modalDownload" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Muestras pendientes</h4>
+                </div>
+                <div class="modal-body">
+                    Generando informe...
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>

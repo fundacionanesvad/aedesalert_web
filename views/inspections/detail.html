@@ -1,0 +1,477 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.inspections.list">Listado</a></li>
+                    <li><strong>Detalle <span ng-hide="view.loading">- {{data.area.parentName}}</span></strong></li>     
+                    <li ng-hide="view.loading"><strong>{{data.area.name}}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel with-nav-tabs panel-primary" ng-hide="view.loading">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a ng-click="view.tab=1; refresh();" data-toggle="tab">Inspección</a></li>
+                <li><a ng-click="view.tab=2" data-toggle="tab">Detalle</a></li>
+                <li><a ng-click="view.tab=3" data-toggle="tab">Planes <span class="badge">{{data.plans.length}}</span></a> </li>
+                <li check-access="VISITS_VIEW"><a ng-click="view.tab=4" data-toggle="tab">Visitas <span class="badge">{{totalVisits}}</span></a></li>
+                <li ng-show="data.samples.length > 0" check-access="SAMPLES_VIEW"><a ng-click="view.tab=5" data-toggle="tab">Muestras <span class="badge">{{data.samples.length}}</span></a></li>
+            </ul>
+            <div class="btn-group pull-right" ng-show="view.tab==3 && data.plans.length != 0 && data.inspection.stateId == 3002 && data.inspection.stateId != 3003 && data.inspection.stateId != 3004" style="margin: -34px 5px;">
+                <a ng-click="substitutes()" class="btn btn-warning btn-xs">Manzanas Suplentes</a>
+            </div>
+
+
+
+            <div class="btn-group pull-right" ng-show="view.tab==1" style="margin: -34px 5px;">
+                <img ng-show="view.saving" class="pull-right img-offset" src="../../images/loading.svg" />
+                <a ng-click="savePlans()" ng-disabled="buttonDisabled" ng-hide="view.saving" class="btn btn-warning btn-xs">Guardar</a>
+            </div>
+            <div class="btn-group pull-right" ng-show="view.tab==5" style="margin: -34px 5px;">
+                <img ng-show="view.saving" class="pull-right img-offset" src="../../images/loading.svg" />
+                <a ng-click="samples()" class="btn btn-warning btn-xs">Exportar</a>
+            </div>
+
+        </div>
+        <div class="panel-body">
+            <div ng-show="view.tab==1">
+                <div class="col-md-2 no-padding">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <strong>Inspección {{data.inspection.typeId | element:elements}}<span ng-show="data.schedule.reconversionScheduleId"> (Reconversión)</span></strong>
+                        </div>
+                        <div class="panel-body">
+                            <row>
+                                <div class="col-sm-8 no-padding">Viviendas:</div>
+                                <div class="col-sm-4 no-padding text-right bold">{{data.area.houses}}</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-8 no-padding">Objetivo:</div>
+                                <div class="col-sm-4 no-padding text-right bold">{{data.inspection.inspectionSize}}</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-8 no-padding">Intervalo:</div>
+                                <div class="col-sm-4 no-padding text-right bold">{{data.inspection.interval}}</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-8 no-padding">Planificación:</div>
+                                <div class="col-sm-4 no-padding text-right bold">{{data.inspection.progress}}%</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-6 no-padding">Larvicida:</div>
+                                <div class="col-sm-6 no-padding text-right bold">{{data.larvicides.name}}</div>
+                            </row>
+                            <row ng-show="data.schedule.reconversionScheduleId">
+                                <row>
+                                    <div class="col-sm-3 no-padding">Control:</div>
+                                    <div class="col-sm-9 no-padding text-right bold">{{data.recschedule.startDate | date:'shortDate'}}-{{data.recschedule.finishDate | date:'shortDate'}}</div>
+                                </row>
+                            </row>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <strong>Fechas</strong>
+                            <div class="btn-group pull-right">
+                                <a href="javascript:;" ng-if="data.inspection.stateId != 3003" ng-click="openDate()" title="Añadir"><span class="glyphicon glyphicon-plus icon-add" aria-hidden="true" /></a>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div ng-repeat="day in data.days | orderBy" class="row-select col-sm-12 no-padding" ng-click="selectDate(day)" ng-class="day == data.date ? 'row-selected' : ''">
+                                <div class="col-sm-10 no-padding ellipsis text-selected" title="{{day | date:'fullDate'}}">
+                                    <i class="glyphicon glyphicon-calendar"></i> {{day | shortDate}}
+                                </div>
+                                <div class="col-sm-2 no-padding text-right show-hovered" ng-show="data.inspection.stateId <= 3002 && day > today">
+                                    <span class="glyphicon glyphicon-pencil icon-edit" aria-hidden="true" title="Modificar" ng-click="editDate(day)"></span>
+                                    <span class="glyphicon glyphicon-remove icon-delete" aria-hidden="true" title="Eliminar" ng-click="confirmDate(day)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default" ng-show="data.days.length">
+                        <div class="panel-heading">
+                            <strong>Inspectores</strong>
+                            <div class="btn-group pull-right">
+                                <a href="javascript:;" ng-if="data.inspection.stateId != 3003" ng-click="openUser()" title="Añadir"><span class="glyphicon glyphicon-plus icon-add" aria-hidden="true" /></a>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div ng-repeat="brigade in data.brigades | orderBy:'name'" class="row-select col-sm-12 no-padding" ng-click="selectUser(brigade.id)" ng-class="brigade.id == data.userId ? 'row-selected' : ''">
+                                <div class="col-sm-10 no-padding ellipsis text-selected" title="{{brigade.planStateId | element:elements}}">
+                                    <i class="glyphicon" ng-class="{'glyphicon-hourglass': brigade.planStateId == 7001, 'glyphicon-play text-info': brigade.planStateId == 7002, 'glyphicon-ok text-success': brigade.planStateId == 7003}"></i> {{brigade.name}}
+                                </div>
+                                <div class="col-sm-2 no-padding text-right show-hovered" ng-show="brigade.planStateId == 7001 && data.inspection.stateId <= 3002">
+                                    <span class="glyphicon glyphicon-remove icon-delete" aria-hidden="true" title="Eliminar" ng-click="confirmUser(brigade)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <strong>Sectores</strong>
+                        </div>
+                        <div class="panel-body">
+                            <row ng-repeat="sector in data.sectors" class="row-select" ng-mouseenter="hoverSector(sector)" ng-mouseleave="hoverSector({})" ng-class="sector.id == map.hoveredSector.id ? 'row-selected' : ''">
+                                <div class="col-sm-8 no-padding ellipsis text-selected" title={{sector.name}}><small>{{sector.name}}</small></div>
+                                <div class="col-sm-4 no-padding text-right bold"><small>{{sector.progress}}%</small></div>
+                            </row>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <script type="text/ng-template" id="legend.tpl.html">
+                        <ul class="legend list-unstyled">
+                            <li class="legend-title">Colores manzanas</li>
+                            <li><i style="background-color:#39a75a !important;" /><span>Seleccionada en plan actual</span></li>
+                            <li><i style="background-color:#575757 !important;" /><span>Seleccionada en otro plan</span></li>
+                            <li><i style="background-color:#3899d4 !important;" /><span>Seleccionada en varios planes</span></li>
+                            <li><i style="background-color:#e74c3c !important;" /><span>Reconversión necesaría</span></li>
+                        </ul>
+                    </script>
+                    <script type="text/ng-template" id="tooltip.tpl.html">
+                        <div id="instantTooltip" class="legend" style="display: none">Prueba</div>
+                    </script>
+                    <ui-gmap-google-map center="map.config.center" zoom="map.config.zoom" options="map.config.options">
+                        <ui-gmap-map-control template="legend.tpl.html" position="TOP_RIGHT"></ui-gmap-map-control>
+                        <ui-gmap-map-control template="tooltip.tpl.html" position="TOP_LEFT"></ui-gmap-map-control>
+                    </ui-gmap-google-map>
+                </div>
+                <div class="col-md-2 no-padding" ng-if="data.plan!=null">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <strong>Plan</strong>
+                        </div>
+                        <div class="panel-body">
+                            <row>
+                                <div class="col-sm-5 no-padding">Estado:</div>
+                                <div class="col-sm-7 no-padding text-right bold">{{data.plan.stateId | element:elements}}</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-10 no-padding ellipsis">Visitas estimadas:</div>
+                                <div class="col-sm-2 no-padding text-right bold">{{data.plan.planSize}}</div>
+                            </row>
+                            <row>
+                                <div class="col-sm-10 no-padding ellipsis">Vivienda inicio:</div>
+                                <div class="col-sm-2 no-padding text-right bold">{{data.plan.houseIni}}</div>
+                            </row>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <strong>Manzanas</strong>
+                        </div>
+                        <div class="panel-body">
+                            <row ng-repeat="block in data.plan.blocks | orderBy: 'name'" class="row-select" ng-mouseenter="hoverBlock(block)" ng-mouseleave="hoverBlock({})" ng-class="block.id == map.hoveredBlock.id ? 'row-selected' : ''">
+                                <div class="col-sm-12 no-padding ellipsis text-selected" title={{block.name}}><small>{{block.name}}</small></div>
+                            </row>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="view.tab==2">
+                <form class="form-horizontal">
+                    <fieldset ng-disabled="view.saving">
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Planificación</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><a ui-sref="app.schedules.detail({id: data.inspection.scheduleId})">Ver</a></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Zona</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><a ui-sref="app.areas.detail({id: data.area.id})">{{data.area.name}}</a></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Viviendas Zona</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.area.houses}} viviendas</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Tipo Inspección</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">
+                                    {{data.inspection.typeId | element:elements}}
+                                    <span ng-show="data.schedule.reconversionScheduleId"> (Reconversión)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="streetNumber" class="col-sm-2 control-label">Estado</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">{{data.inspection.stateId | element: elements}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="houses" class="col-sm-2 control-label">Fecha Inicio</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.inspection.startDate | shortDate}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="houses" class="col-sm-2 control-label">Fecha Fin</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.inspection.finishDate | shortDate}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="data.inspection.stateId == 3003">
+                            <label for="houses" class="col-sm-2 control-label">Informe Producción</label>
+                            <div class="col-sm-10">
+                                <input type="submit" class="btn btn-warning" value="Exportar" ng-click="printXlsx()" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10" check-access="INSPECTIONS_EDIT">
+                                <input ng-if="data.plans.length != 0 && data.inspection.stateId == 3001" type="submit" class="btn btn-success" value="Activar" ng-click="activateInspection()" />
+                                <input ng-if="data.plans.length != 0 && data.inspection.stateId == 3002" type="submit" class="btn btn-warning" value="Finalizar" ng-click="finalizeInspection()" />
+                                <img ng-show="view.saving" src="../../images/loading32.gif" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div ng-show="view.tab==3">
+                <div class="table-responsive">
+                    <script type="text/ng-template" id="/date.tpl.html">
+                        <div ng-model="params.filter()[name]" timestamp-format>
+                            <input type="text" name="{{name}}" class="input-filter form-control" ng-click="openPicker($event)" uib-datepicker-popup="dd/MM/yy"
+                                   ng-model="timestamp" is-open="picker.opened" datepicker-options="{startingDay: 1}"
+                                   close-text="Cerrar" current-text="Hoy" clear-text="Borrar" readonly />
+                        </div>
+                    </script>
+                    <!--Areas template-->
+                    <script type="text/ng-template" id="/areas.tpl.html">
+                        <input ng-model="areaFilter" type="text" autocomplete="off" typeahead-min-length="0" typeahead-on-select="onAreaFilterSelect($item, $model, $label)"
+                               ng-change="onAreaFilterChange()" uib-typeahead="area as area.name for area in data.blocks | filter: { name:$viewValue } | limitTo:10" class="form-control" />
+                    </script>
+                    <div class="table-responsive">
+                        <table ng-table="tableParamsPlan" class="table table-striped" show-filter="true">
+                            <tr ng-repeat="plan in  $data">
+                                <td data-title="'Fecha'" sortable="'date'" filter="{ date: '/date.tpl.html'}" width="115px">{{plan.date | shortDate}}</td>
+                                <td data-title="'Inspector'" sortable="'userName'" filter="{ userName: 'text'}"> {{plan.userName}}</td>
+                                <td data-title="'Estado'" sortable="'stateName'" filter="{ stateId: 'select'}" filter-data="states">{{plan.stateName}}</td>
+                                <td data-title="'Tamaño'" sortable="'planSize'" filter="{ planSize: 'number'}">{{plan.planSize}} viviendas</td>
+                                <td data-title="'Zonas'" sortable="'areas'" filter="{ area: '/areas.tpl.html'}">
+                                    <span ng-repeat="area in plan.areas">
+                                        {{(area.id | array:data.blocks) + ($last ? '' : ',')}}
+                                    </span>
+                                </td>
+                                <td data-title="'Registro manual'" colspan="2">
+                                    <a ng-if="data.inspection.stateId ==3002 && plan.id != null  && (plan.stateId == 7001 || plan.stateId == 7002) " ui-sref="app.plans.detail({ id: plan.id })">Detallado</a>&nbsp;&nbsp;&nbsp;<a ng-if="data.inspection.stateId ==3002 && plan.id != null && (plan.stateId == 7001 || plan.stateId == 7002) " ui-sref="app.plans.summary({ id: plan.id })">Consolidado</a>
+                                </td>
+                                <td data-title="'&nbsp;'" class="text-right" width="70px">
+                                    <a ng-show="plan.stateId == 7003 && plan.id != null && permissionToSend" href="#" title="Descargar Resumen Visitas" ng-click="downloadPlan(plan.id)"><i class="glyphicon glyphicon-download-alt"></i></a>
+                                    <a ng-show="plan.stateId == 7003 && plan.id != null && permissionToSend" href="#" title="Email Resumen Visitas" ng-click="sendEmailInspector(plan.id)"><i class="glyphicon glyphicon-envelope"></i></a>
+                                    <a href="#" title="Imprimir Mapa" ng-click="printReport(plan.id)"><i class="glyphicon glyphicon-print"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="view.tab==4">
+                <div class="table-responsive">
+                    <table ng-table="tableParamsVisits" class="table table-striped table-hover" show-filter="true">
+                        <tr ng-repeat="visit in $data" ng-click="detailVisit(visit)">
+                            <td data-title="'Sector'" filter="{sectorName: 'text'}" sortable="'sectorName'">{{visit.sectorName}}</td>
+                            <td data-title="'Manzana'" filter="{areaName: 'text'}" sortable="'areaName'">{{visit.areaName}}</td>
+                            <td data-title="'Inspector'" filter="{userName: 'text'}" sortable="'userName'">{{visit.userName}}</td>
+                            <td data-title="'Fecha'" filter="{date: '/date.tpl.html'}" sortable="'date'">{{visit.date | shortDate}}</td>
+                            <td data-title="'Resultado'" filter="{resultId: 'select'}" filter-data="results" sortable="'resultName'">{{visit.resultName}}</td>
+                            <td data-title="'Febriles'" filter="{feverish: 'select'}" filter-data="feverishTypes" sortable="'feverish'"> <check-icon value="visit.feverish" /> </td>
+                            <td data-title="'Muestra'" filter="{sample: 'select'}" filter-data="samplesTypes" sortable="'sample'"> <check-icon value="visit.sample" /> </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div ng-show="view.tab==5">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><a href="" ng-click="predicate='date'; reverse=!reverse">Fecha</a></th>
+                                <th><a href="" ng-click="predicate='address'; reverse=!reverse">Dirección</a></th>
+                                <th><a href="" ng-click="predicate='mz'; reverse=!reverse">Manzana</a></th>
+                                <th><a href="" ng-click="predicate='sector'; reverse=!reverse">Sector</a></th>
+                                <th><a href="" ng-click="predicate='code'; reverse=!reverse">Código</a></th>
+                                <th><a href="" ng-click="predicate='result'; reverse=!reverse">Resultado</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in data.samples | orderBy:predicate:reverse">
+                                <td>{{item.date}}</td>
+                                <td>{{item.address}}</td>
+                                <td>{{item.mz}}</td>
+                                <td>{{item.sector}}</td>
+                                <td>{{item.code}}</td>
+                                <td>{{item.result}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDate">
+        <form ng-submit="addDay()">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Seleccionar Fecha</h4>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="date" label-required>Fecha</label>
+                                <div class="input-group" ng-model="data.day" timestamp-format>
+                                    <uib-datepicker ng-model="timestamp" show-weeks="true" class="well well-sm no-margin" custom-class="getDayClass(date, mode)"
+                                                    datepicker-options="{startingDay: 1}" min-date="picker.minDate" max-date="picker.maxDate" date-disabled="disableDate(date, mode)" />
+                                </div>
+                                <p ng-show="editDay" class="padding-t-20">(Se cambiará la fecha de todos los planes del día seleccionado)</p>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <fieldset>
+                            <label class="text-danger" ng-show="requiredField">Fecha requerida</label>
+                            <input type="submit" class="btn btn-primary" value="Aceptar" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        </fieldset>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </form>
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modalBrigade">
+        <form ng-submit="userState()">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Seleccionar Inspector</h4>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="userId" label-required>Inspector</label>
+                                <input id="userId" autocomplete="off" type="text" ng-model="data.user" typeahead-min-length="0" placeholder="Escribe por lo menos una letra para buscar un inspector" uib-typeahead="user as user.name for user in data.usersAdd | filter: { name:$viewValue, profileId: 2 , enabled: true} | limitTo:10" class="form-control" />
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <fieldset ng-disabled="procesing">
+                            <label class="text-danger" ng-show="requiredField">Inspector requerido</label>
+                            <img ng-show="procesing" src="../../images/loading32.gif" />
+                            <input type="submit" class="btn btn-primary" value="Aceptar" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        </fieldset>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </form>
+    </div><!-- /.modal -->
+
+
+    <div class="modal fade" id="modalUserStateAlert">
+        <div class="modal-dialog modal-dialog-center">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-alert"></span>&nbsp;&nbsp;Aviso</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{userStateAlert}}</p>
+                    <p> ¿Quiere incluirlo en esta inspeción?</p>
+                </div>
+                <div class="modal-footer">
+                    <fieldset>
+                        <button type="button" class="btn btn-primary" ng-click="addUser()">Aceptar</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cerrar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <div class="modal fade" id="modalDownload" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Informe</h4>
+                </div>
+                <div class="modal-body">
+                    Generando...
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modalSend" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-download"></span> Email</h4>
+                </div>
+                <div class="modal-body">
+                    Enviando...
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modalSendError" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span> Email</h4>
+                </div>
+                <div class="modal-body">
+                    Error ...
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <delete-modal target="deleteDateModal" action="deleteDate()" deleting="deleting">
+        <p>¿Estás seguro de querer eliminar <b>todos los planes</b> del día <b>{{deleteItem | shortDate}}</b>?</p>
+    </delete-modal>
+
+    <delete-modal target="deleteUserModal" action="deleteUser()" deleting="deleting">
+        <p>¿Estás seguro de querer eliminar el plan del inspector <b>{{deleteItem.name}}</b> para el día <b>{{data.date | shortDate}}</b>?</p>
+    </delete-modal>
+
+    <alert-modal target="modalAlert">
+        <p>{{textAlert}}</p>
+    </alert-modal>
+</div>

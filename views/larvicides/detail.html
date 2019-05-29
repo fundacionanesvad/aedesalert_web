@@ -1,0 +1,90 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.larvicides.list">Listado</a></li>
+                    <li><strong>Detalle</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="view.loading">
+        <div class="panel-heading">Larvicida</div>
+        <div class="panel-body">
+            <form class="form-horizontal" ng-submit="save()">
+                <fieldset ng-disabled="saving">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" label-required>Nombre Larvicida</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Nombre" ng-model="larvicide.name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" label-required>Nombre Dosis</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Moños, cucharas,..." ng-model="larvicide.doseName" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" label-required>Dosis</label>
+                        <div class="col-sm-10">
+                            <input type="number" step=".01" min="0.01" class="form-control" placeholder="Peso/volumen de una dosis" ng-model="larvicide.dose" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" label-required>Unidad Medida</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Unidad de una dosis (g, ml,...)" ng-model="larvicide.unity" maxlength="2" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" label-required>Volumen de Agua</label>
+                        <div class="col-sm-10">
+                            <input type="number" min="1" class="form-control" placeholder="Volumen en litros que trata una dosis" ng-model="larvicide.waterVolume" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Activo</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="larvicide.enabled">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="submit" class="btn btn-primary" value="Guardar" />
+                            <a ui-sref="app.larvicides.list" class="btn btn-default">Volver</a>
+                            <img ng-show="view.saving" src="../../images/loading32.gif" />
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

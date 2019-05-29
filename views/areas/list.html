@@ -1,0 +1,85 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li ng-repeat="parent in parents"><a ui-sref="{id: parent.id}">{{parent.name}}</a></li>
+                    <li><strong>{{data.name}}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">
+            <div class="btn-group pull-right">
+                <a ui-sref="app.areas.create({parent: id})" class="btn btn-warning btn-xs" check-access="AREAS_EDIT">Añadir</a>
+            </div>
+            {{data.name}}
+            <a ui-sref="app.areas.detail({id: id})" title="Detalle" class="padding-l-5">
+                <span class="glyphicon glyphicon-edit icon-white" aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="panel-body">
+            <div class="text-center" ng-hide="data.childs.length">
+                <h3>No hay datos</h3>
+            </div>
+            <div class="table-responsive" ng-show="data.childs.length">
+                <table class="table table-striped" ng-class="{'table-hover': data.typeId != 9006}">
+                    <thead>
+                        <tr>
+                            <th><a href="" ng-click="predicate='code'; reverse=!reverse">Código</a></th>
+                            <th><a href="" ng-click="predicate='name'; reverse=!reverse">Nombre</a></th>
+                            <th><a href="" ng-click="predicate='typeId'; reverse=!reverse">Tipo</a></th>
+                            <th><a href="" ng-click="predicate='houses'; reverse=!reverse">Viviendas</a></th>
+                            <th><a href="" ng-click="predicate='coords'; reverse=!reverse">Coordenadas</a></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="child in data.childs | orderBy:predicate:reverse" ng-click="detail(child)">
+                            <td>{{child.code}}</td>
+                            <td>{{child.name}}</td>
+                            <td>{{child.typeId | element:elements}}</td>
+                            <td>{{child.houses}}</td>
+                            <td><check-icon value="child.coords" /></td>
+                            <td style="text-align:right">
+                                <edit-button link="app.areas.detail({id: {{child.id}}})" stop-event></edit-button>
+                                <delete-button target="deleteModal" ng-click="confirm(child)" stop-event check-access="AREAS_EDIT"></delete-button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <delete-modal target="deleteModal" action="delete()" deleting="deleting">
+        <p>¿Estás seguro de querer eliminar la zona <b>{{deleteItem.name}}</b>?</p>
+    </delete-modal>
+
+    <alert-modal target="errorModal">
+        <p>No se ha podido eliminar la zona <b>{{deleteItem.name}}</b> por tener zonas hijas y/o por contener viviendas.</p>
+    </alert-modal>
+</div>

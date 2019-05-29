@@ -1,0 +1,99 @@
+﻿   <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.traps.list">Listado</a></li>
+                    <li class="active"><strong>Ingreso/edición de datos</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">Ingreso datos</div>
+        <div class="panel-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-1 control-label" ng-show="data.area.typeId <= 9002">Región</label>
+                    <div class="col-sm-2" ng-show="data.area.typeId <= 9002">
+                        <select class="form-control" ng-options="area as area.name for area in data.areaLists[1]" ng-model="data.areas[1]" ng-change="loadAreas(9003)" />
+                    </div>
+                    <label class="col-sm-1 control-label" ng-show="data.area.typeId <= 9003">Red</label>
+                    <div class="col-sm-2" ng-show="data.area.typeId <= 9003">
+                        <select class="form-control" ng-options="area as area.name for area in data.areaLists[2]" ng-model="data.areas[2]" ng-change="loadAreas(9004)" />
+                    </div>
+                    <label class="col-sm-1 control-label" ng-show="data.area.typeId <= 9004">Microrred</label>
+                    <div class="col-sm-2" ng-show="data.area.typeId <= 9004">
+                        <select class="form-control" ng-options="area as area.name for area in data.areaLists[3]" ng-model="data.areas[3]" ng-change="loadAreas(9005)" />
+                    </div>
+                    <label class="col-sm-1 control-label" ng-show="data.area.typeId <= 9005">EESS</label>
+                    <div class="col-sm-2" ng-show="data.area.typeId <= 9005">
+                        <select class="form-control bold" ng-options="area as area.name for area in data.areaLists[4]" ng-model="data.areas[4]" ng-change="loadData()" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1 control-label">Año</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" ng-options="year as year for year in data.years" ng-model="data.filters.year" ng-change="loadWeeks()" />
+                    </div>
+                    <label class="col-sm-1 control-label">Semana</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" ng-options="week as week for week in data.weeks" ng-model="data.filters.week" ng-change="loadData()" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center padding-t-20" ng-show="refreshing">
+                <img src="../../images/loading64.gif" />
+            </div>
+            <div class="text-center padding-t-20" ng-hide="data.traps.length || refreshing">
+                <h3>No hay datos</h3>
+            </div>
+            <div class="table-responsive padding-t-20" ng-show="data.traps.length && !refreshing">
+                <table class="table table-striped table-middle">
+                    <tbody>
+                        <tr ng-repeat="trap in data.traps | orderBy: 'code'">
+                            <td>Ovitrampa - {{trap.code}}</td>
+                            <td><input type="number" min="0" ng-model="trap.eggs" ng-disabled="trap.resultId || !access.eggs" /> huevos</td>
+                            <td>
+                                <fieldset ng-disabled="trap.eggs != null || !access.results">
+                                    <span ng-repeat="element in tables[11]">
+                                        <input type="checkbox" id="trap{{trap.trapId}}_{{element.id}}" ng-checked="trap.resultId == element.id" ng-true-value="{{element.id}}" ng-false-value="null" ng-model="trap.resultId" />
+                                        <label for="trap{{trap.trapId}}_{{element.id}}">{{element.name}}</label>
+                                    </span>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center padding-t-20">
+                    <button class="btn btn-primary" ng-click="saveChanges()" ng-disabled="saving">Guardar</button>
+                    <button class="btn btn-default" ng-click="loadData()" ng-disabled="saving">Cancelar</button>
+                    <img ng-show="saving" src="../../images/loading32.gif" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.houses.list">Listado</a></li>
+                    <li><strong>{{data.house.code}}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel with-nav-tabs panel-primary" ng-hide="view.loading">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a ng-click="view.tab=1" data-toggle="tab">Vivienda</a></li>
+                <li check-access="VISITS_VIEW"><a ng-click="view.tab=2" data-toggle="tab">Visitas <span class="badge">{{data.visits.length}}</span></a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div ng-show="view.tab==1">
+                <form class="form-horizontal" ng-submit="save()">
+                    <fieldset ng-disabled="view.saving">
+                        <div class="form-group">
+                            <label for="area" class="col-sm-2 control-label">Zona</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static"><a ui-sref="app.areas.detail({id: data.house.areaId})">{{data.house.areaName}}</a></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="streetName" class="col-sm-2 control-label">Nombre calle</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.streetName}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="streetNumber" class="col-sm-2 control-label">Número calle</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.streetNumber}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="code" class="col-sm-2 control-label">Número habitantes</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.personsNumber}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="number" class="col-sm-2 control-label">Número</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.number}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="code" class="col-sm-2 control-label">Código</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.code}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="streetNumber" class="col-sm-2 control-label">Código QR</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{data.house.qrcode}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="houses" class="col-sm-2 control-label">Posición<br /><span class="glyphicon glyphicon-refresh" ng-click="refresh()"></span></label>
+                            <div class="col-sm-10">
+                                <script type="text/ng-template" id="tools.tpl.html">
+                                    <div class="map-tools" check-access="HOUSES_EDIT">
+                                        <a class="map-tools-link" ng-click="delete()">Borrar posición</a>
+                                    </div>
+                                </script>
+                                <ui-gmap-google-map center="map.config.center" zoom="map.config.zoom" options="map.config.options">
+                                    <ui-gmap-drawing-manager options="drawingManagerOptions" control="drawingManagerControl" static="true"></ui-gmap-drawing-manager>
+                                    <ui-gmap-polygon path="map.polygon" fill="{ opacity: '0' }" stroke="{ color: '#000000', opacity: '0.5' }" clickable="false"></ui-gmap-polygon>
+                                </ui-gmap-google-map>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input type="submit" class="btn btn-primary" value="Guardar" check-access="HOUSES_EDIT" />
+                                <a ui-sref="app.houses.list" class="btn btn-default">Volver</a>
+                                <img ng-show="view.saving" src="../../images/loading32.gif" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div ng-show="view.tab==2">
+                <div class="text-center" ng-hide="data.visits.length">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.visits.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Febriles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="visit in data.visits | orderBy:'-date'" ng-click="detailVisit(visit)">
+                                <td>{{visit.date | shortDate}}</td>
+                                <td>{{visit.resultName}}</td>
+                                <td>{{visit.resultName == 'Inspeccionada' ? (visit.feverish ? visit.feverish : 'No') : '-'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

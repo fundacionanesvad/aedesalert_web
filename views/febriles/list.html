@@ -1,0 +1,61 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><strong>Listado</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+<div id="page-wrapper">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="btn-group pull-right">
+                <a ui-sref="app.febriles.detail({id: 'new'})" class="btn btn-warning btn-xs">Añadir</a>
+            </div>
+            Caso <span class="badge">{{total}}</span>
+        </div>
+        <div class="panel-body">
+            <script type="text/ng-template" id="/date.tpl.html">
+                <div ng-model="params.filter()[name]" timestamp-format>
+                    <input type="text" name="{{name}}" class="input-filter form-control" ng-click="openPicker($event)" uib-datepicker-popup="dd/MM/yyyy"
+                           ng-model="timestamp" is-open="picker.opened" datepicker-options="{startingDay: 1}"
+                           close-text="Cerrar" current-text="Hoy" clear-text="Borrar" readonly />
+                </div>
+            </script>
+            <table ng-table="tableParams" class="table table-striped table-hover" show-filter="true">
+                <tr ng-repeat="row in $data">
+                    <td ng-click="detail(row)" data-title="'Red'" filter="{redName: 'text'}" sortable="'redName'">{{row.redName}}</td>
+                    <td ng-click="detail(row)" data-title="'Microrred'" filter="{microrredName: 'text'}" sortable="'microrredName'">{{row.microrredName}}</td>
+                    <td ng-click="detail(row)" data-title="'EESS'" filter="{eessName: 'text'}" sortable="'eessName'">{{row.eessName}}</td>
+                    <td ng-click="detail(row)" data-title="'Fecha'" filter="{date: '/date.tpl.html'}" sortable="'date'">{{row.date | shortDate}}</td>
+                    <td style="text-align: right"><delete-button target="deleteModal" ng-click="confirm(row)" stop-event /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <delete-modal target="deleteModal" action="delete()" deleting="deleting">
+        <p>¿Estás seguro de querer eliminar el caso de dengue?</p>
+    </delete-modal>
+</div>

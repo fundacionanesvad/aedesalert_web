@@ -1,0 +1,47 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<loading ng-visible="loading" />
+
+<ol class="breadcrumb" ng-hide="loading">
+    <li><a ui-sref="app.tables.list">Listas</a></li>
+    <li><a ui-sref="app.tables.elements.list({parent: {{element.tableHeaderId}}})">{{table.name}}</a></li>
+    <li class="active">{{edit ? element.labels[0].value : 'Nuevo'}}</li>
+</ol>
+
+<div class="panel panel-primary" ng-hide="loading">
+    <div class="panel-heading">Elemento</div>
+    <div class="panel-body">
+        <form class="form-horizontal" ng-submit="save()">
+            <fieldset ng-disabled="saving">
+                <div class="form-group" ng-repeat="label in element.labels">
+                    <label for="name" class="col-sm-2 control-label">{{label.languageId | array:languages}}</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" placeholder="{{label.languageId | array:languages}}" ng-model="label.value" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <input type="submit" class="btn btn-primary" value="Guardar" />
+                        <a ui-sref="app.tables.elements.list({parent: {{element.tableHeaderId}}})" class="btn btn-default">Volver</a>
+                        <img ng-show="saving" src="../../images/loading32.gif" />
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

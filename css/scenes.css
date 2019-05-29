@@ -1,0 +1,70 @@
+﻿/*
+ *     Aedes Alert, Support to collect data to combat dengue
+ *     Copyright (C) 2017  Fundación Anesvad
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+.btn-light-success,
+.btn-light-warning,
+.btn-light-danger {
+  color: #FFF;
+}
+.btn-light-success {
+  background-image: -webkit-linear-gradient(top, #aaefaa 0%, #93d593 100%);
+  background-image: -o-linear-gradient(top, #aaefaa 0%, #93d593 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#aaefaa), to(#93d593));
+  background-image: linear-gradient(to bottom, #aaefaa 0%, #93d593 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5cb85c', endColorstr='#ff419641', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #93d593;
+}
+.btn-light-success:hover,
+.btn-light-success:focus {
+  color: #EEE;
+  background-color: #93d593;
+  background-position: 0 -15px;
+}
+.btn-light-warning {
+  background-image: -webkit-linear-gradient(top, #ffd69c 0%, #ffc067 100%);
+  background-image: -o-linear-gradient(top, #ffd69c 0%, #ffc067 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffd69c), to(#ffc067));
+  background-image: linear-gradient(to bottom, #ffd69c 0%, #ffc067 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffd69c', endColorstr='#ffffc067', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #ffc067;
+}
+.btn-light-warning:hover,
+.btn-light-warning:focus {
+  color: #EEE;
+  background-color: #ffc067;
+  background-position: 0 -15px;
+}
+.btn-light-danger {
+  background-image: -webkit-linear-gradient(top, #fca9a7 0%, #ff7774 100%);
+  background-image: -o-linear-gradient(top, #fca9a7 0%, #ff7774 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#fca9a7), to(#ff7774));
+  background-image: linear-gradient(to bottom, #fca9a7 0%, #ff7774 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffca9a7', endColorstr='#ffff7774', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #ff7774;
+}
+.btn-light-danger:hover,
+.btn-light-danger:focus {
+  color: #EEE;
+  background-color: #ff7774;
+  background-position: 0 -15px;
+}

@@ -1,0 +1,97 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><strong>Listado</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">
+            Escenarios
+        </div>
+        <div class="panel-body">
+            <div class="text-center" ng-hide="items.length">
+                <h3>No hay datos</h3>
+            </div>
+            <div class="table-responsive" ng-show="items.length" >
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><a href="" ng-click="predicate='areaName'; reverse=!reverse">Centro de salud</a></th>
+                            <th><a href="" ng-click="predicate='sceneLevel'; reverse=!reverse">Nivel escenario</a></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in items | orderBy:predicate:reverse">
+                            <td><a ui-sref="app.areas.detail({id: '{{item.areaId}}'})" stop-event>{{item.areaName}}</a></td>
+                            <td>{{item.sceneLevel}}</td>   
+                            <td style="text-align:right">
+                                <span class="glyphicon glyphicon-edit icon-normal" aria-hidden="true" ng-click="editScene(item)" title="Modificar"></span>
+                            </td>                       
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>  
+</div>
+
+
+<div class="modal fade" id="modalScene">
+    <form class="form-horizontal" ng-submit="save()">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> Modificar nivel escenario</h4>
+                </div>
+                <div class="modal-body" style="margin-top: 40px; padding-bottom: 40px">
+                    <div class="btn-group btn-group-justified" role="group">
+                        <div class="btn-group" role="group">
+                            <button type="button" ng-class="getButtonClass(1)" ng-click="scene.sceneLevel = 1">Nivel 1</button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" ng-class="getButtonClass(2)" ng-click="scene.sceneLevel = 2">Nivel 2</button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" ng-class="getButtonClass(3)" ng-click="scene.sceneLevel = 3">Nivel 3</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="saving">
+                        <img ng-show="saving" src="../../images/loading32.gif" />
+                        <input type="submit" class="btn btn-primary" value="Guardar" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div>

@@ -1,0 +1,167 @@
+﻿/*
+ *     Aedes Alert, Support to collect data to combat dengue
+ *     Copyright (C) 2017  Fundación Anesvad
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+.angular-google-map-container { 
+    height: 500px;
+}
+
+.map-tools {
+    margin: 7px;
+}
+
+.map-tools-link {
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    padding: 3px;
+}
+
+.map-tools-link:hover {
+    background-color: lightgray;
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+}
+
+.legend {
+    border: 1px solid black;
+    background-color: white !important;
+    padding: 5px;
+    margin: 5px;
+}
+
+.legend-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.legend li {
+    line-height: 18px;
+}
+
+.legend li i {
+    width: 20px;
+    height: 14px;
+    border: 1px solid black;
+    opacity: 0.8;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    -webkit-print-color-adjust: exact;
+}
+
+.legend2 {
+    border: 1px solid black;
+    background-color: white;
+    width: 322px;
+	box-sizing: border-box;
+    color: black;
+}
+
+.legend2 ul {
+    list-style: none;
+	float: left;
+	width: 80px;
+	padding: 5px;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.legend2 span {
+    font-weight: bold;
+    padding-left: 5px;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+.legend2 td {
+    vertical-align: top;
+}
+
+.legend2 ul li:first-child {
+    text-decoration: underline;
+}
+
+.legend2 .control {
+    background-color: #f94938;
+}
+
+.legend2 .reconversion {
+    background-color: #a0d520;
+}
+
+.legend2 .vigilance {
+    background-color: #ecfc17;
+}
+
+.legend3 {
+    border: 1px solid black;
+    background-color: white;
+    width: 402px;
+	box-sizing: border-box;
+    color: black;
+    padding: 5px;
+    margin: 5px;
+}
+
+.legend3 table {
+    width: 100%;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
+.legend3 table, .legend3 th, .legend3 td {
+    border: 1px solid black;
+    text-align: center;
+}
+
+.legend3 table:last-child {
+    margin-bottom: 0;
+}
+
+.legend3 td {
+    padding: 4px;
+    min-width: 45px;
+}
+
+.legend3 span {
+    font-weight: bold;
+    line-height: 20px;
+    font-size: 13px;
+}
+
+.legend3 table.control thead {
+    font-weight: bold;
+    background-color: #f94938;
+}
+
+.legend3 table.reconversion thead {
+    font-weight: bold;
+    background-color: #a0d520;
+}
+
+.legend3 table.control-reconversion thead {
+    font-weight: bold;
+    background-color: #7bb9e4;
+}
+
+.map-preview {
+    overflow: scroll;
+}

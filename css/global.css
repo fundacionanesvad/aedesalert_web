@@ -1,0 +1,177 @@
+/*
+ *     Aedes Alert, Support to collect data to combat dengue
+ *     Copyright (C) 2017  Fundación Anesvad
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&lang=en");
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+html, body {
+  height: 100%;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.full-height-overflow {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+.navbar-custom  {
+    font-size: 16px;
+}
+
+
+/*
+ * Main content
+ */
+
+.content-container {
+    padding-top: 50px;
+}
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+/*
+ * Iconos
+ */
+.icon-delete {
+	color: #B43D3C;
+	font-size: 16px;
+    cursor: pointer;
+}
+
+.icon-delete:hover {
+	color: #F95454;
+}
+
+.icon-edit {
+	color: #2F71AA;
+	font-size: 16px;
+    cursor: pointer;
+}
+
+.icon-edit:hover {
+	color: #3E97E0;
+}
+
+.icon-add {
+	color: #3c763d;
+	font-size: 16px;
+    cursor: pointer;
+}
+
+.icon-add:hover {
+	color: #66CC71;
+}
+
+.icon-normal {
+	color: black;
+	font-size: 16px;
+}
+
+a .icon-normal:hover {
+	color: #666;
+}
+
+.icon-white {
+    color: white;
+	font-size: 16px;
+}
+
+.icon-white:hover {
+	color: #BCCCD8;
+}
+ 
+.glyphicon-none:before {
+    content: "\2b";
+    color: transparent !important;
+}
+
+.version {
+    position:absolute; 
+    bottom:0; 
+    left:0;
+    padding: 5px;
+    font-size: 10px;
+    color: gray;
+}
+
+.version-login {
+    padding-top: 10px;
+    font-size: 10px;
+    color: gray;
+}
+
+.table-hover {
+    cursor: pointer;
+}
+
+.bold {
+    font-weight: bold;
+}

@@ -1,0 +1,410 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print" check-access="INSPECTIONS_VIEW">
+                    <li><a ui-sref="app.inspections.list">Inspecciones</a></li>
+                    <li><a ui-sref="app.inspections.detail({id: data.plan.inspectionId})">Inspección</a></li>
+                    <li><strong>Plan</strong></li>
+                </ol>
+                <ol class="breadcrumb hidden-print" check-access="PLANS_VIEW,!INSPECTIONS_VIEW">
+                    <li><a ui-sref="app.plans.list">Planes</a></li>
+                    <li><strong>Plan</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel with-nav-tabs panel-primary" ng-hide="data.visit || view.loading">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a ng-click="view.tab=1" data-toggle="tab">Visitas registradas <span class="badge">{{total}}</span></a></li>
+                <li><a ng-click="view.tab=2" data-toggle="tab">Datos del plan</a></li>
+            </ul>
+            <div class="btn-group pull-right" style="margin: -34px 5px;" ng-show="view.tab==1">
+                <a class="btn btn-warning btn-xs" ng-click="addVisit()">Añadir</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-show="view.tab==1">
+                <div class="text-center" ng-hide="data.visits">
+                    <h3>No hay datos</h3>
+                </div>
+                <div class="table-responsive" ng-show="data.visits">
+                    <table ng-table="tableParamsVisits" class="table table-striped table-hover" show-filter="true">
+                        <tr ng-repeat="visit in $data" ng-click="showVisit(visit)">
+                            <td data-title="'Manzana'" filter="{areaName: 'text'}" sortable="'areaName'">{{visit.areaName | array:data.areas}}</td>
+                            <td data-title="'Calle'" filter="{houseStreet: 'text'}" sortable="'houseStreet'">{{visit.houseStreet}}</td>
+                            <td data-title="'Número'" filter="{houseNumber: 'text'}" sortable="'houseNumber'">{{visit.houseNumber}}</td>
+                            <td data-title="'Resultado Visita'" filter={resultId:'text'} sortable="'resultId'">{{visit.resultId | array:tables[2]}}</td>
+                            <td data-title="'Nº Residentes'" filter="{personsNumber: 'text'}" sortable="'personsNumber'">{{visit.personsNumber}}</td>
+                            <td data-title="'Muestras'" filter="{sample: 'text'}" sortable="'sample'">{{visit.sample}}</td>
+                            <td data-title="'Dosis'" filter="{dose: 'text'}" sortable="'dose'">{{visit.dose}}</td>
+                            <td style="text-align: right"><delete-button target="modalDelete" ng-click="confirm(visit)" stop-event /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="pull-right">
+                    <input type="submit" class="btn btn-primary" value="Finalizar Plan" data-target="#modalConfirm" data-toggle="modal" data-backdrop="static" data-keyboard="false" ng-hide="data.visits.length == 0" />
+                </div>
+            </div>
+            <div ng-show="view.tab==2">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="number" class="col-sm-2 control-label">Fecha</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{data.plan.date | shortDate}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label">Inspector</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{data.plan.userName}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="area" class="col-sm-2 control-label">Estado plan</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{data.plan.stateName}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group" check-access="INSPECTIONS_VIEW">
+                        <label for="area" class="col-sm-2 control-label">Inspección</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static"><a ui-sref="app.inspections.detail({id: data.plan.inspectionId})"><span class="glyphicon glyphicon-search"></span> Ver</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-show="data.visit">
+        <div class="col-md-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Manzana
+                </div>
+                <div class="panel-body">
+                    <div ng-repeat="area in data.areas | orderBy:['substitute', 'name']">
+                        <input id="area{{area.id}}" type="radio" value="{{area.id}}" ng-click="selectArea(area)" ng-model="data.visit.house.areaId" ng-checked="data.visit.house.areaId == {{area.id}}" />
+                        <label for="area{{area.id}}" title="{{area.substitute ? 'Manzana suplente' : ''}}">{{area.name}} <span ng-show="area.substitute">*</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="btn-group pull-right" ng-show="data.visit.house.areaId">
+                        <button class="btn btn-warning btn-xs" ng-click="addStreet()">Añadir</button>
+                    </div>
+                    Calle
+                </div>
+                <div class="panel-body">
+                    <div class="text-center" ng-hide="data.visit.house.areaId">
+                        <h3>Elegir una manzana</h3>
+                    </div>
+                    <div ng-show="data.visit.house.areaId">
+                        <div class="text-center" ng-hide="data.area.houses.length">
+                            <h3>No hay datos</h3>
+                        </div>
+                        <div ng-show="data.area.houses.length">
+                            <div data-ng-repeat="(key, value) in data.area.houses | groupBy:'streetName' | orderBy:'streetName'">
+                                <input id="street{{key}}" type="radio" value="{{key}}" ng-click="selectStreetName(key)" ng-model="data.visit.house.streetName" ng-checked="data.visit.house.streetName == key" />
+                                <a ng-click="editStreetName(key, value)"><label for="street{{key}}">{{key}}</label></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="btn-group pull-right" ng-show="data.visit.house.streetName">
+                        <button class="btn btn-warning btn-xs" ng-click="addNumber()">Añadir</button>
+                    </div>
+                    Número
+                </div>
+                <div class="panel-body">
+                    <div class="text-center" ng-hide="data.visit.house.streetName">
+                        <h3>Elegir una calle</h3>
+                    </div>
+                    <div ng-show="data.visit.house.streetName">
+                        <div class="text-center" ng-hide="data.area.houses.length">
+                            <h3>No hay datos</h3>
+                        </div>
+                        <div ng-show="data.area.houses.length">
+                            <div class="col-md-3" data-ng-repeat="item in data.area.houses | filter : { streetName: data.visit.house.streetName } : true | orderBy:'streetNumber'">
+                                <input id="number{{item.streetNumber}}" type="radio" value="{{item.streetNumber}}" ng-click="selectHouse(item)" ng-model="data.visit.house.streetNumber" ng-checked="data.visit.house.streetNumber == item.streetNumber" />
+                                <a ng-click="editStreetNumber(item)"><label for="number{{item.streetNumber}}">{{item.streetNumber}}</label></a>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary" ng-show="data.visit.house.streetNumber">
+        <div class="panel-heading">
+            Visita
+        </div>
+        <div class="panel-body">
+            <div>
+                <div class="col-sm-2 no-padding">
+                    <div class="col-sm-8 no-padding"><label>Tipo visita</label></div>
+                    <!--Si es un control de reconversion, solo saldra "Inspeccionada"-->
+
+                    <div class="col-sm-8 no-padding" ng-repeat="state in tables[2]" ng-if="state.name =='Inspeccionada'">
+                        <input id="state{{state.id}}" type="radio" value="{{state.id}}" ng-checked="data.visit.visit.resultId == state.id" ng-click="changeState()" ng-model="data.visit.visit.resultId" />
+                        <label for="state{{state.id}}">{{state.name}}</label>
+                    </div>
+
+                    <div class="col-sm-8 no-padding" ng-repeat="state in tables[2]" ng-if="state.name != 'Inspeccionada' && data.schedule.reconversionScheduleId == null">
+                        <input id="state{{state.id}}" type="radio" value="{{state.id}}" ng-checked="data.visit.visit.resultId == state.id" ng-click="changeState()" ng-model="data.visit.visit.resultId" />
+                        <label for="state{{state.id}}">{{state.name}}</label>
+                    </div>
+                   
+                    <div>&nbsp;</div>
+                    <div class="col-sm-8 no-padding padding-t-20"><label>Número residentes</label></div>
+                    <div class="col-sm-8 no-padding">
+                        <input class="form-control input-sm" name="people" type="number" ng-model="data.visit.house.personsNumber" ng-disabled="data.visit.visit.resultId != 2001" />
+                    </div>
+                    <div class="col-sm-8 no-padding padding-t-20"><label>Número febriles</label></div>
+                    <div class="col-sm-8 no-padding">
+                        <input class="form-control input-sm" name="feverish" type="number" ng-model="data.visit.visit.feverish" ng-disabled="data.visit.visit.resultId != 2001" />
+                    </div>
+                </div>
+                <div>
+                    <div class="table-responsive">
+                        <fieldset ng-disabled="data.visit.visit.resultId != 2001">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo Recipiente</th>
+                                        <th>Inspeccionado</th>
+                                        <th>Foco</th>
+                                        <th>Destruido</th>
+                                        <th>Tratado</th>
+                                        <th>{{data.larvicide.doseName}} {{data.larvicide.name}} ({{data.larvicide.dose}} {{data.larvicide.unity}})</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in data.visit.listInventories">
+                                        <td>{{item.containerId | array:tables[4]}}</td>
+                                        <td><input class="form-control input-sm" name="inspected" type="number" min="0" ng-model="item.inspected"></td>
+                                        <td><input class="form-control input-sm" name="focus" type="number" min="0" ng-model="item.focus" ng-change="updateSamples(item)"></td>
+                                        <td><input class="form-control input-sm" name="destroyed" type="number" min="0" ng-model="item.destroyed"></td>
+                                        <td><input class="form-control input-sm" name="treated" type="number" min="0" ng-model="item.treated"></td>
+                                        <td><input class="form-control input-sm" name="packet" type="number" min="0" ng-model="item.packet"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="pull-right" style="padding-right: 15px">
+            <fieldset ng-disabled="view.saving">
+                <img ng-show="view.saving" src="../../images/loading32.gif" />
+                <input type="submit" class="btn btn-primary" value="Guardar" ng-click="validateVisit()" ng-show="data.visit.house.streetNumber" />
+                <input type="submit" class="btn btn-default" value="Volver" ng-click="cancelVisit()" ng-show="data.visit" />
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+<delete-modal target="modalDelete" action="delete()" deleting="view.deleting">
+    <p>¿Estás seguro de querer eliminar la visita?</p>
+</delete-modal>
+
+<alert-modal target="modalAlert">
+    <p>{{textAlert}}</p>
+</alert-modal>
+
+<div class="modal fade" id="modalHouse">
+    <form ng-submit="addHouse()">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Añadir vivienda</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="date" label-required>Calle</label>
+                            <input id="streetName" type="text" class="form-control" ng-model="data.house.streetName" ng-required="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="date" label-required>Número</label>
+                            <input id="streetNumber" type="text" class="form-control" ng-model="data.house.streetNumber" ng-required="true" />
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <fieldset>
+                        <input type="submit" class="btn btn-primary" value="Añadir" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalSamples">
+    <form>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Muestras de los focos</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <div class="table-responsive">
+                            <table class="table table-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo Recipiente</th>
+                                        <th>Código muestra</th>
+                                        <th>Fases</th>
+                                    </tr>
+                                </thead>
+                                <tbody ng-repeat="item in data.visit.listInventories">
+                                    <tr ng-repeat="sample in  item.listSyncSample">
+                                        <td>{{item.containerId | array:tables[4]}}</td>
+                                        <td>{{sample.code}}</td>
+                                        <td>
+                                            <span ng-repeat="element in tables[5]">
+                                                <input type="checkbox" id="sample{{sample.code}}_{{element.id}}" ng-click="changePhase(sample, element.id)" />
+                                                <label for="sample{{sample.code}}_{{element.id}}">{{element.name}}</label>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="view.saving">
+                        <span style="color: red">{{samplesError}}</span>
+                        <img ng-show="view.saving" src="../../images/loading32.gif" />
+                        <button type="button" class="btn btn-primary" ng-click="saveVisit()" ng-disabled="samplesError != ''">Guardar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Finalizar plan</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    ¿Estás seguro de querer finalizar el plan?<br />
+                    No se podrán añadir más visitas.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <fieldset ng-disabled="view.saving">
+                    <img ng-show="view.saving" src="../../images/loading32.gif" />
+                    <input type="submit" class="btn btn-primary" value="Aceptar" ng-click="closePlan()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </fieldset>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="modalEditStreetName">
+    <form ng-submit="saveNewStreetName()">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Modificar dirección vivienda</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="date" label-required>Calle</label>
+                            <input id="streetNameEdit" type="text" class="form-control" ng-model="data.newAddress.streetName" ng-required="true" />
+                        </div>
+
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="modalView.saving">
+                        <img ng-show="modalView.saving" src="../../images/loading32.gif" />
+                        <input type="submit" class="btn btn-primary" value="Guardar" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>                  
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modalEditStreetNumber">
+    <form ng-submit="saveNewStreetNumber()">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Modificar número vivienda</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="date" label-required>Número</label>
+                            <input id="streetNumberEdit" type="text" class="form-control" ng-model="data.newAddress.streetNumber" ng-required="true" />
+                        </div>
+
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="modalView.saving">
+                        <img ng-show="modalView.saving" src="../../images/loading32.gif" />
+                        <input type="submit" class="btn btn-primary" value="Guardar" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->

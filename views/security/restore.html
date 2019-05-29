@@ -1,0 +1,54 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div class="container" ng-controller="RestoreController" data-ng-init="validate()">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <form role="form" ng-submit="restore()">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading login-panel-heading">
+                        <h1 class="panel-title">{{appname}}</h1>
+                    </div>
+                        <div class="panel-body">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Usuario" type="text" ng-model="user.login" required autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Nueva contraseña" type="password" ng-model="user.newPass" required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Repetir contraseña" type="password" ng-model="user.confirmPass" required>
+                                </div>
+                                <p class="text-danger" ng-show="error" ng->{{textError}}</p>
+                            </fieldset>
+
+                        </div>
+                        <div class="panel-footer">
+                            <fieldset ng-disabled="loading">
+                                <span class="pull-left login-version">Versión {{version}}</span>  
+                                <input type="submit" class="btn btn-primary pull-right" value="Enviar" />
+                                <img ng-show="loading" class="pull-right img-offset" src="../../images/loading32.gif" />
+                            </fieldset>
+
+                           
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>

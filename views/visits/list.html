@@ -1,0 +1,63 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><strong>Listado</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Visitas <span class="badge">{{total}}</span>
+        </div>
+        <div class="panel-body">
+            <script type="text/ng-template" id="/date.tpl.html">
+                <div ng-model="params.filter()[name]" timestamp-format>
+                    <input type="text" name="{{name}}" class="input-filter form-control" ng-click="openPicker($event)" uib-datepicker-popup="dd/MM/yyyy" 
+                           ng-model="timestamp" is-open="picker.opened" datepicker-options="{startingDay: 1}" 
+                           close-text="Cerrar" current-text="Hoy" clear-text="Borrar" readonly />
+                </div>
+            </script>
+            <div class="table-responsive">
+                <table ng-table="tableParams" class="table table-striped table-hover" show-filter="true">
+                    <tr ng-repeat="row in $data" ng-click="detail(row)">
+                        <td data-title="'Microrred'" filter="{microrredName: 'text'}" sortable="'microrredName'">{{row.microrredName}}</td>
+                        <td data-title="'EESS'" filter="{eessName: 'text'}" sortable="'eessName'">{{row.eessName}}</td>
+                        <td data-title="'Sector'" filter="{sectorName: 'text'}" sortable="'sectorName'">{{row.sectorName}}</td>
+                        <td data-title="'Manzana'" filter="{areaName: 'text'}" sortable="'areaName'">{{row.areaName}}</td>
+                        <td data-title="'Calle'" filter="{houseStreet: 'text'}" filter-data="houseStreet" sortable="'houseStreet'">{{row.houseStreet}}</td>
+                        <td data-title="'Nº Casa'" filter="{houseNumber: 'text'}" filter-data="houseNumber" sortable="'houseNumber'">{{row.houseNumber}}</td>
+                        <td data-title="'Fecha'" filter="{date: '/date.tpl.html'}" sortable="'date'" width="115px">{{row.date | shortDate}}</td>
+                        <td data-title="'Resultado'" filter="{resultId: 'select'}" filter-data="results" sortable="'resultName'">{{row.resultName}}</td>
+                        <td data-title="'Febriles'" filter="{feverish: 'select'}" filter-data="feverishTypes" sortable="'feverish'"> <check-icon value="row.feverish" /> </td>
+                        <td data-title="'Muestra'" filter="{sample: 'select'}" filter-data="samplesTypes" sortable="'sample'"> <check-icon value="row.sample" /> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

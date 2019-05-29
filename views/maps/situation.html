@@ -1,0 +1,379 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb">
+                    <li ng-show="data.areas[0]">{{data.areas[0].name}}</li>
+                    <li ng-show="data.areas[1]">{{data.areas[1].name}}</li>
+                    <li ng-show="data.areas[2]"><strong>{{data.areas[2].name}}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="view.loading || view.refreshing" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+            <div class="pull-right visible-print">
+                <h2>Periodo</h2>
+                <span>{{filters.active.startDate | shortDate}} - {{filters.active.finishDate | shortDate}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="hidden-print hidden">
+        <span class="glyphicon glyphicon-refresh" title="Refrescar" ng-click="refresh()"></span>
+        <span class="glyphicon glyphicon-zoom-out" title="Atrás" ng-click="back()"></span>
+        <span class="glyphicon glyphicon-print" title="Imprimir" ng-click="print()"></span>
+        <span class="glyphicon glyphicon-info-sign" title="Info" ng-click="info()"></span>
+    </div>
+    <script type="text/ng-template" id="legend.tpl.html">
+        <ul class="legend list-unstyled">
+            <li class="legend-title">Capas</li>
+            <li><i style="background-color:#f94938 !important;" /><span>Control</span></li>
+            <li><i style="background-color:#3ad235 !important;" /><span>Reconversión</span></li>
+            <li><i style="background-color:#ecfc17 !important;" /><span>Vigilancia</span></li>
+        </ul>
+    </script>
+    <script type="text/ng-template" id="tooltip.tpl.html">
+        <div id="instantTooltip" class="legend2" ng-show="area">
+            <span id="title">CAPAS: EESS - {{area.name}}</span>
+            <table>
+                <tr class="control">
+                    <td>
+                        <ul>
+                            <li>Cob %</li>
+                            <li>V.I = {{area.control.inspected / area.control.programmed | percentage:1}}</li>
+                            <li>V.C = {{area.control.closed / area.control.programmed | percentage:1}}</li>
+                            <li>V.R = {{area.control.reluctant / area.control.programmed | percentage:1}}</li>
+                            <li>V.A = {{area.control.abandoned / area.control.programmed | percentage:1}}</li>
+                        </ul>
+                    </td>                   
+                    <td>
+                        <ul>
+                            <li>Viv. P</li>
+                            <li>{{area.control.focus}}</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Rec.P</li>
+                            <li>{{area.control.focusContainers}}</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>DP</li>
+                            <li ng-repeat="container in area.control.containers">{{container.name.substring(0, 3).trim()}} = {{container.focus}}</li>                           
+                        </ul>
+                    </td>
+                </tr>
+                <tr class="reconversion">
+                    <td>
+                        <ul>
+                            <li>Cob %</li>
+                            <li>V.I = {{area.reconversion.inspected / area.reconversion.programmed | percentage:1}}</li>
+                            <li>V.C = {{area.reconversion.closed / area.reconversion.programmed | percentage:1}}</li>
+                            <li>V.R = {{area.reconversion.reluctant / area.reconversion.programmed | percentage:1}}</li>
+                            <li>V.A = {{area.reconversion.abandoned / area.reconversion.programmed | percentage:1}}</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Viv. P</li>
+                            <li>{{area.reconversion.focus}}</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Rec.P</li>
+                            <li>{{area.reconversion.focusContainers}}</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>DP</li>
+                            <li ng-repeat="container in area.reconversion.containers">{{container.name.substring(0, 3).trim()}} = {{container.focus}}</li>                           
+                        </ul>
+                    </td>
+                    <tr class="vigilance">
+                        <td>
+                            <ul>
+                                <li>Indice</li>
+                                <li ng-show="area.vigilance.inspected">I.A = {{area.vigilance.focus / area.vigilance.inspected | number:2}}</li>
+                                <li ng-hide="area.vigilance.inspected">I.A = NA</li>
+                                <li ng-show="area.vigilance.inspectedContainers">I.R = {{area.vigilance.focusContainers / area.vigilance.inspectedContainers | number:2}}</li>
+                                <li ng-hide="area.vigilance.inspectedContainers">I.R = NA</li>
+                                <li ng-show="area.vigilance.inspected">I.B = {{area.vigilance.focusContainers * 100 / area.vigilance.inspected | number:2}}</li>
+                                <li ng-hide="area.vigilance.inspected">I.B = NA</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Viv.P</li>
+                                <li>{{area.vigilance.focus}}</li>
+                            </ul>
+                        </td>>
+                        <td>
+                            <ul>
+                                <li>Rec.P</li>
+                                <li>{{area.vigilance.focusContainers}}</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>DP</li>
+                                <li ng-repeat="container in area.vigilance.containers">{{container.name.substring(0, 3).trim()}} = {{container.focus}}</li>                           
+                            </ul>
+                        </td>
+                    </tr>
+                   
+            </table>
+        </div>
+    </script>
+    <script type="text/ng-template" id="tooltip-mr.tpl.html">
+        <div id="instantTooltip2" class="legend3" ng-show="area" ng-mouseleave="area = null">
+            <span id="title">RESUMEN: Microrred - {{area.name}}</span>
+            <table class="control">
+                <thead>
+                    <tr>
+                        <td colspan="7">CONTROL</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bold">
+                        <td>Viviendas Programadas</td>
+                        <td>V.I</td>
+                        <td>V.C</td>
+                        <td>V.R</td>
+                        <td>V.A</td>
+                        <td>Viv. Positivas</td>
+                        <td>Recip. Positivos</td>
+                    </tr>
+                    <tr>
+                        <td>{{area.control.programmed}}</td>
+                        <td>{{area.control.inspected}}</td>
+                        <td>{{area.control.closed}}</td>
+                        <td>{{area.control.reluctant}}</td>
+                        <td>{{area.control.abandoned}}</td>
+                        <td rowspan="2">{{area.control.focus}}</td>
+                        <td rowspan="2">{{area.control.containers}}</td>
+                    </tr>
+                    <tr>
+                        <td>100%</td>
+                        <td>{{area.control.inspected / area.control.programmed | percentage:1}}</td>
+                        <td class="bold">{{area.control.closed / area.control.programmed | percentage:1}}</td>
+                        <td>{{area.control.reluctant / area.control.programmed | percentage:1}}</td>
+                        <td>{{area.control.abandoned / area.control.programmed | percentage:1}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="reconversion">
+                <thead>
+                    <tr>
+                        <td colspan="7">RECUPERACIÓN (RECONVERSIÓN)</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bold">
+                        <td>Viviendas Programadas</td>
+                        <td>V.I</td>
+                        <td>V.C</td>
+                        <td>V.R</td>
+                        <td>V.A</td>
+                        <td>Viv. Positivas</td>
+                        <td>Recip. Positivos</td>
+                    </tr>
+                    <tr>
+                        <td>{{area.reconversion.programmed}}</td>
+                        <td>{{area.reconversion.inspected}}</td>
+                        <td>{{area.reconversion.closed}}</td>
+                        <td>{{area.reconversion.reluctant}}</td>
+                        <td>{{area.reconversion.abandoned}}</td>
+                        <td rowspan="2">{{area.reconversion.focus}}</td>
+                        <td rowspan="2">{{area.reconversion.containers}}</td>
+                    </tr>
+                    <tr>
+                        <td>100%</td>
+                        <td>{{area.reconversion.inspected / area.reconversion.programmed | percentage:1}}</td>
+                        <td>{{area.reconversion.closed / area.reconversion.programmed | percentage:1}}</td>
+                        <td>{{area.reconversion.reluctant / area.reconversion.programmed | percentage:1}}</td>
+                        <td>{{area.reconversion.abandoned / area.reconversion.programmed | percentage:1}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="control-reconversion">
+                <thead>
+                    <tr>
+                        <td colspan="7">CONTROL + RECUPERACIÓN ({{area.reconversion.closed / area.control.programmed | percentage:1}})</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bold">
+                        <td>Viviendas Programadas</td>
+                        <td>V.I</td>
+                        <td>V.C</td>
+                        <td>V.R</td>
+                        <td>V.A</td>
+                        <td>Viv. Positivas</td>
+                        <td>Recip. Positivos</td>
+                    </tr>
+                    <tr>
+                        <td>{{area.control.programmed}}</td>
+                        <td>{{area.control.inspected + area.reconversion.inspected}}</td>
+                        <td>{{area.control.closed - area.reconversion.closed}}</td>
+                        <td>{{area.control.reluctant - area.reconversion.reluctant}}</td>
+                        <td>{{area.control.abandoned - area.reconversion.abandoned}}</td>
+                        <td rowspan="2">{{area.control.focus + area.reconversion.focus}}</td>
+                        <td rowspan="2">{{area.control.containers + area.reconversion.containers}}</td>
+                    </tr>
+                    <tr>
+                        <td>100%</td>
+                        <td>{{(area.control.inspected + area.reconversion.inspected) / area.control.programmed | percentage:1}}</td>
+                        <td class="bold">{{(area.control.closed - area.reconversion.closed) / area.control.programmed | percentage:1}}</td>
+                        <td>{{(area.control.reluctant - area.reconversion.reluctant) / area.control.programmed | percentage:1}}</td>
+                        <td>{{(area.control.abandoned - area.reconversion.abandoned) / area.control.programmed | percentage:1}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+    <div id="page-wrapper-map" ng-hide="view.loading">
+        <div class="form-inline hidden-print">
+            <div class="form-group">
+                <label class="control-label">Fechas</label>
+                <a href class="input-group" data-toggle="modal" data-target="#modalRange">
+                    <span class="form-control">{{filters.active.startDate | shortDate}} - {{filters.active.finishDate | shortDate}}</span>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </a>
+            </div>
+            <div class="form-group padding-l-20" ng-show="data.area.typeId <= 9002">
+                <label class="control-label">Región</label>
+                <select class="form-control" ng-options="area as area.name for area in data.areaLists[1]" ng-model="data.areas[1]" ng-change="loadAreas(9003)" style="width: 190px;" />
+            </div>
+            <div class="form-group padding-l-20" ng-show="data.area.typeId <= 9003">
+                <label class="control-label">Red</label>
+                <select class="form-control" ng-options="area as area.name for area in data.areaLists[2]" ng-model="data.areas[2]" ng-change="loadInspections()" style="width: 190px;" />
+            </div>
+            <div class="form-group padding-l-20">
+                <label class="control-label">Inspecciones</label>
+                <a href class="input-group" data-toggle="modal" data-target="#modalInspections">
+                    <span class="form-control" style="width: 155px;" ng-show="filters.active.allInspections">Todas</span>
+                    <span class="form-control" style="width: 155px;" ng-hide="filters.active.allInspections">{{filters.active.inspections.length}} seleccionadas</span>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                </a>
+            </div>
+            <div class="form-group padding-l-20">
+                <input id="focus-houses" type="checkbox" ng-model="filters.active.focusHouses" ng-change="loadData()" />
+                <label class="control-label" for="focus-houses">Viviendas positivas</label>
+            </div>
+        </div>
+        <ui-gmap-google-map center="map.config.center" zoom="map.config.zoom" options="map.config.options" style="height: 100%; display: block; padding-top: 10px">
+            <ui-gmap-map-control template="legend.tpl.html" position="TOP_RIGHT"></ui-gmap-map-control>
+            <ui-gmap-map-control template="tooltip.tpl.html" position="TOP_LEFT" controller="MapEESSControlController"></ui-gmap-map-control>
+            <ui-gmap-map-control template="tooltip-mr.tpl.html" position="LEFT_BOTTOM" controller="MapMRControlController"></ui-gmap-map-control>
+        </ui-gmap-google-map>
+    </div>
+
+    <div class="modal fade" id="modalRange">
+        <div class="modal-dialog modal-dialog700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-calendar"></span> Periodo</h4>
+                </div>
+                <div class="modal-body">
+                    <div style="display:inline-block; min-height:290px;">
+                        <div class="col-sm-6">
+                            <h4>Inicio</h4>
+                            <div ng-model="filters.edit.startDate" timestamp-format>
+                                <uib-datepicker ng-model="timestamp" class="well well-sm" show-weeks="true" starting-day="1" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>Fin</h4>
+                            <div ng-model="filters.edit.finishDate" timestamp-format>
+                                <uib-datepicker ng-model="timestamp" class="well well-sm" show-weeks="true" starting-day="1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="view.saving">
+                        <img ng-show="view.saving" src="../../images/loading32.gif" />
+                        <span class="text-danger" ng-if="filters.edit.startDate>filters.edit.finishDate">Rango de fechas no valido</span>
+                        <button ng-disabled="filters.edit.startDate>filters.edit.finishDate" class="btn btn-primary" ng-click="applyFilters()">Validar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalInspections">
+        <div class="modal-dialog modal-dialog700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Inspecciones</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center" ng-hide="data.inspections.length">
+                        <h3>No hay datos</h3>
+                    </div>
+                    <div class="table-responsive" ng-show="data.inspections.length">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th><check-icon id="AllValues" value="allValue == true" ng-click="toggleAllInspection()"/></th>
+                                    <th><a href="" ng-click="predicate='microrredName'; reverse=!reverse">Microrred</a></th>
+                                    <th><a href="" ng-click="predicate='areaName'; reverse=!reverse">EESS</a></th>
+                                    <th><a href="" ng-click="predicate='startDate'; reverse=!reverse">Inicio</a></th>
+                                    <th><a href="" ng-click="predicate='finishDate'; reverse=!reverse">Fin</a></th>
+                                    <th><a href="" ng-click="predicate='inspectionSize'; reverse=!reverse">Tamaño</a></th>
+                                    <th><a href="" ng-click="predicate='typeName'; reverse=!reverse">Tipo</a></th>
+                                    <th><a href="" ng-click="predicate='stateName'; reverse=!reverse">Estado</a></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="inspection in data.inspections | orderBy:'-startDate' |  orderBy:predicate:reverse" ng-click="toggleInspection(inspection.id)">
+                                    <td><check-icon value="filters.active.inspections.indexOf(inspection.id) != -1" /></td>
+                                    <td>{{inspection.microrredName}}</td>
+                                    <td>{{inspection.areaName}}</td>
+                                    <td>{{inspection.startDate | shortDate}}</td>
+                                    <td>{{inspection.finishDate | shortDate}}</td>
+                                    <td>{{inspection.inspectionSize}}</td>
+                                    <td>{{inspection.typeName}}</td>
+                                    <td>{{inspection.stateName}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <fieldset ng-disabled="view.saving">
+                        <img ng-show="view.saving" src="../../images/loading32.gif" />
+                        <p id="moddalError"><b>{{textoError}}</b></p>
+                        <button class="btn btn-primary" ng-click="applyInspections()">Validar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

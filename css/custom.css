@@ -1,0 +1,369 @@
+/*
+ *     Aedes Alert, Support to collect data to combat dengue
+ *     Copyright (C) 2017  Fundación Anesvad
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+body {
+	font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #2F4050;
+}
+
+.navbar {
+	border: 0;
+	background-color: #F3F3F4;
+	border-bottom: 1px solid #E7E7E7;
+}
+
+#side-menu {
+	background-color: #2F4050;
+    border-top: 1px solid #E7E7E7;
+}
+
+#side-menu li{
+	border-bottom: 0;
+}
+
+#side-menu a {
+	font-size: 13px;
+	color: #A7B1C2;
+	font-weight: 600;
+}
+
+#side-menu>li>a {
+	padding: 10px;
+    border-left: 4px solid transparent;
+}
+
+#side-menu>li>a>span {
+    padding-right: 10px;
+}
+
+#side-menu a:focus {
+	color: #A7B1C2;
+	background-color: #2F4050;
+}
+
+#side-menu a.active {
+    color: #FFF;
+	background-color: #337AB7;
+    border-left: 4px solid #A7B1C2;
+}
+
+#side-menu a[aria-expanded="false"]::before,#side-menu a[aria-expanded="true"]::before {
+    content: '\e080';
+    display: block;
+    position: absolute;
+    right: 10px;
+    font-family: 'Glyphicons Halflings';
+    font-size: 0.6em;
+    padding-top: 5px;
+}
+
+#side-menu a[aria-expanded="true"]::before {
+    content: '\e259';
+}
+
+#side-menu a, a:hover, a:focus {
+    transition: all 0.3s;
+}
+
+#side-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+#side-menu ul li a {
+    color: #FFF;
+	background-color: #3A5060;
+    border-left: 4px solid #337AB7;
+}
+
+#side-menu ul li a {
+    display: block;
+    padding: 10px 10px 10px 30px;
+    text-decoration: none;
+}
+
+#side-menu a:hover {
+    color: #555;
+	background-color: #FFF;
+    border-left: 4px solid #A7B1C2;
+    padding-left: 15px;
+}
+
+#side-menu ul li a:hover {
+    padding-left: 35px;
+}
+
+@media(min-width:768px) {
+    .sidebar {
+        z-index: 1;
+        position: absolute;
+        width: 165px;
+        margin-top: 0;
+    }
+
+    .navbar-top-links .dropdown-messages,
+    .navbar-top-links .dropdown-tasks,
+    .navbar-top-links .dropdown-alerts {
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 768px) {
+	.navbar {
+	  border-radius: 0;
+	}
+}
+
+#logo {
+	border-right: 1px solid #E7E7E7;
+}
+
+@media (max-width: 768px) {
+    #logo {
+        display:none;
+    }
+}
+
+@media (min-width: 768px) {
+	.navbar-header {
+		margin: 0 0 0 165px;
+	}
+}
+
+#page-wrapper {
+    min-height: 568px;
+	padding: 15px 15px 15px 15px;
+    background-color: #F3F3F4;
+	border-top: 1px solid #E7E7E7;
+}
+
+#page-breadcrumb {
+	background-color: white;
+	padding: 0 15px;
+	color: #777;
+	font-weight: 500;
+}
+
+#page-breadcrumb a {
+	color: #777;
+}
+
+#page-breadcrumb  h2 {
+	font-weight: 100;
+	margin-top: 20px;
+	margin-bottom: 5px;
+}
+
+.page-breadcrumb-loading {
+    padding-top: 15px;
+}
+
+.breadcrumb {
+  padding: 0;
+  background-color: #ffffff!important;
+  min-height: 20px;
+}
+
+@media(min-width:768px) {
+    #page-wrapper {
+        position: inherit;
+        margin: 0 0 0 165px;
+		padding: 30px 30px 30px 30px;
+        border-left: 0;
+    }
+	
+	#page-breadcrumb {
+		position: inherit;
+		margin: 0 0 0 164px;
+		padding: 0 30px;
+		border-left: 0;
+	}
+}
+
+/*LOGIN*/
+.login-panel-heading {
+	color: #FFF!important;
+	background-color: #265A88!important;
+	text-align:center;
+    background-image: none!important;
+}
+
+.panel-title {
+	font-size: 36px!important;
+}
+
+.login-panel {
+	border: 0;
+}
+
+.login-version {
+    padding-top: 10px;
+    font-size: 10px;
+    color: #808080;
+}
+
+.img-offset {
+    padding: 0 10px;
+}
+
+@media (min-width: 768px) {
+    .modal-dialog700 {
+        width: 700px;
+        margin: 30px auto;
+    }
+}
+
+.form-control[readonly] {
+  background-color: white;
+  cursor: pointer;
+}
+
+/*ROW NO PADDING*/
+.no-padding {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.row-select {
+    cursor: pointer;
+}
+
+.link-collapsed-area {
+	font-weight: bold;
+	color: #265A88;
+	text-decoration: none;
+    cursor: pointer;
+}
+.link-collapsed-area:hover {
+	font-weight: bold;
+	color: #337AB7;
+	text-decoration: none;
+    cursor: pointer;
+}
+
+.link-area {
+	font-weight: bold;
+	color: #111111;
+	text-decoration: none;
+    cursor: pointer;
+}
+.link-area:hover {
+	font-weight: bold;
+	color: #ab1845;
+	text-decoration: none;
+    cursor: pointer;
+}
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-scroll-body {
+    max-height: calc(100vh - 215px);
+    overflow-y: auto;
+}
+
+.row-selected .text-selected {
+    font-weight: bold;
+	color: #2F71AA; 
+}
+
+.row-selected .text-selected:hover {
+    color: #3E97E0;
+}
+
+.row-select:hover .text-selected {
+    font-weight: bold;
+    color: #3E97E0;
+}
+
+.show-hovered {
+    display: none;
+}
+
+.row-select:hover .show-hovered {
+    display: block;
+}
+
+.padding-t-5 {
+    padding-top: 5px;
+}
+
+.padding-t-10 {
+    padding-top: 10px;
+}
+
+.padding-t-20 {
+    padding-top: 20px;
+}
+
+.padding-l-5 {
+    padding-left: 5px;
+}
+
+.padding-l-10 {
+    padding-left: 10px;
+}
+
+.padding-l-20 {
+    padding-left: 20px;
+}
+
+.padding-b-5 {
+    padding-bottom: 5px;
+}
+
+.padding-b-10 {
+    padding-bottom: 10px;
+}
+
+.padding-b-20 {
+    padding-bottom: 20px;
+}
+
+.padding-r-5 {
+    padding-right: 5px;
+}
+
+.padding-r-10 {
+    padding-right: 10px;
+}
+
+.padding-r-20 {
+    padding-right: 20px;
+}
+
+input[type="radio"] ~ label, input[type="checkbox"] ~ label {
+    margin-bottom: 0;
+    font-weight: normal;
+    padding-right: 10px;
+}
+
+.table-middle > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.ng-table-sort-header {
+    cursor: pointer;
+}
+
+/*CHECKBOX*/

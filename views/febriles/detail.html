@@ -1,0 +1,89 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.traps.manage.list">Listado</a></li>
+                    <li class="active"><strong>{{id == 'new' ? 'Nuevo' : 'Detalle' }}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+   
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">
+           Caso dengue confirmado
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal" ng-submit="save()">
+                <fieldset ng-disabled="saving || !edit">
+                    <div class="form-group" ng-show="data.area.typeId <= 9002">
+                        <label class="col-sm-2 control-label">Región</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" ng-options="area as area.name for area in data.areaLists[1]" ng-model="data.areas[1]" ng-change="loadAreas(9003)" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="data.area.typeId <= 9003">
+                        <label class="col-sm-2 control-label">Red</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" ng-options="area as area.name for area in data.areaLists[2]" ng-model="data.areas[2]" ng-change="loadAreas(9004)" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="data.area.typeId <= 9004">
+                        <label class="col-sm-2 control-label">Microrred</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" ng-options="area as area.name for area in data.areaLists[3]" ng-model="data.areas[3]" ng-change="loadAreas(9005)" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="data.area.typeId <= 9005">
+                        <label class="col-sm-2 control-label">EESS</label>
+                        <div class="col-sm-4">
+                            <select class="form-control bold" ng-options="area as area.name for area in data.areaLists[4]" ng-model="data.areas[4]" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">Fecha</label>
+                        <div class="col-sm-4">
+                            <div class="input-group" ng-model="data.febrile.date" timestamp-format>
+                                <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="timestamp" is-open="picker.opened"
+                                       ng-click="openPicker($event)" datepicker-options="{startingDay: 1}" show-button-bar="false" readonly/>
+                                <span class="input-group-btn" ng-click="openPicker($event)">
+                                    <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>                    
+                </fieldset>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <input type="submit" class="btn btn-primary" value="Guardar" ng-disabled="saving" ng-show="edit" />
+                        <a ui-sref="app.febriles.list" class="btn btn-default" ng-disabled="saving">Volver</a>
+                        <img ng-show="saving" src="../../images/loading32.gif" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

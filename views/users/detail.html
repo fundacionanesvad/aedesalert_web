@@ -1,0 +1,164 @@
+﻿    <!--
+  ~     Aedes Alert, Support to collect data to combat dengue
+  ~     Copyright (C) 2017  Fundación Anesvad
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<div id="page-breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                <h2>{{title}}</h2>
+                <ol class="breadcrumb hidden-print">
+                    <li><a ui-sref="app.users.list">Listado</a></li>
+                    <li class="active"><strong>{{edit ? user.name : 'Nuevo'}}</strong></li>
+                </ol>
+            </div>
+            <img ng-show="loading" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+        </div>
+    </div>
+</div>
+
+<div id="page-wrapper">
+    <div class="panel panel-primary" ng-hide="loading">
+        <div class="panel-heading">Usuario</div>
+        <div class="panel-body">
+            <form class="form-horizontal" ng-submit="save()">
+                <fieldset ng-disabled="saving">
+                    <div class="form-group">
+                        <label for="login" class="col-sm-2 control-label" label-required>Login</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" ng-model="user.id">
+                            <input type="text" class="form-control" id="login" placeholder="Login" ng-model="user.login" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password1" class="col-sm-2 control-label" label-required="edit">Contraseña</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password1" placeholder="{{ edit ? 'Modificar contraseña' : 'Contraseña' }}" ng-model="user.password1" input-required="edit">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password2" class="col-sm-2 control-label" label-required="edit">Repetir contraseña</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password2" placeholder="Repetir contraseña" ng-model="user.password2" input-required="edit">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" label-required>Nombre</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name" placeholder="Nombre" ng-model="user.name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-2 control-label" label-required>Correo</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="email" placeholder="Email" ng-model="user.email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileId" class="col-sm-2 control-label">Perfil</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="profileId" placeholder="Perfil" ng-model="user.profileId" ng-options="profile.id as profile.name for profile in profiles"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="area" class="col-sm-2 control-label" label-required>Area</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">{{user.areaName}}&nbsp;<a href title="Seleccionar" ng-click="showTree()" stop-event><span class="glyphicon glyphicon-edit icon-normal" aria-hidden="true"></span></a><span ng-show="errorArea" ><strong>&nbsp;&nbsp;Completa este campo</strong></span></p>
+                           
+                         </div>                   
+                    </div>
+                    <div class="form-group">
+                        <label for="languageId" class="col-sm-2 control-label">Idioma</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="languageId" placeholder="Idioma" ng-model="user.languageId" ng-options="language.id as language.name for language in languages"></select>
+                        </div>
+                    </div>                   
+                    <div class="form-group">
+                        <label for="enabled" class="col-sm-2 control-label">Activo</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="user.enabled">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                   <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="submit" class="btn btn-primary" value="Guardar" />
+                            <a ui-sref="app.users.list" class="btn btn-default">Volver</a>
+                            <img ng-show="saving" src="../../images/loading32.gif" />
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTree">
+    <form ng-submit="selectArea()">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> Seleccionar Área</h4>
+                </div>
+                <div class="modal-body">
+                    
+                    
+                    
+                    <div class="modal-scroll-body">
+                        <fieldset>
+                            <img ng-show="loadingTree" class="page-breadcrumb-loading pull-right" src="../../images/loading64.gif" />
+
+                            <div ui-tree class="col-sm-11" ng-show="tree">
+                                <ol ui-tree-nodes="" ng-model="data" id="tree-root">
+                                    <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                                </ol>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <fieldset>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </fieldset>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->
+
+
+<!--glyphicon glyphicon-check-->
+
+<script type="text/ng-template" id="nodes_renderer.html">
+    <div ui-tree-handle data-nodrag >
+        <a class="link-collapsed-area" ng-if="node.nodes && node.nodes.length > 0" data-nodrag ng-click="toggle(this)">
+            <span class="glyphicon" ng-class="{'glyphicon glyphicon-minus-sign': !collapsed,'glyphicon glyphicon-plus-sign': collapsed}"></span>
+        </a>
+        <span ng-if="node.nodes.length == 0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <a class="link-area" data-nodrag ng-click="addArea(node)">{{node.title}}</a>
+    </div>
+    <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+        </li>
+    </ol>
+</script>
+   
